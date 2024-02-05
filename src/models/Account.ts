@@ -8,7 +8,8 @@ export interface AccountType {
 }
 export class Account {
     private readonly data: AccountType;
-    
+    private readonly MAX_OVERDRAFT = 200;
+
     constructor(data: AccountType) {
         this.data = data;
     }
@@ -26,7 +27,15 @@ export class Account {
     }
 
     getId(): any {
-        return this.getData().accountId
+        return this.get("accountId")
+    }
+
+    getBalance(): Number {
+        return this.get('balance')
+    }
+
+    getOwner(): string {
+        return this.get('ownerId')
     }
 
     static create(ownerId: string, accountId?: string): Account {
@@ -38,4 +47,10 @@ export class Account {
         return Account.load(newAccountData)
     }
 
+    // withdraw(amount: Number): Account {
+        
+    //     return 
+    // }
+
+    //Withdrawal supports a $200 overdraft (balance, can be down to -$200).
 }
