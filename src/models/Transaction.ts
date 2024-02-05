@@ -57,20 +57,23 @@ export class Transaction {
         return this.get('timestamp')
     }
 
-    static create( // WIP
+    static create( 
         operation: TransactionType["operation"], 
         amount: number,
         fromAccountId: string,
         toAccountId?: string,
         id?: string
         ): Transaction {
-        const newTransactionData: TransactionType = {
+        let newTransactionData: TransactionType = {
             id: id??uuidv4(),
             operation: operation,
             amount,
             fromAccountId,
-            toAccountId,
             timestamp:  Date.now()
+        }
+        if(operation === "TRANSFER") {
+            if(!toAccountId) throw `The destinatary should be specified when performing transaction of type "${operation}"`
+            newTransactionData = {...newTransactionData, toAccountId}
         }
         return Transaction.load(newTransactionData)
     }
