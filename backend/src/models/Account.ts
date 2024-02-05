@@ -1,11 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
+export const MAX_DEPOSIT_PER_DAY: number = 5000;
+
 export interface AccountType {
     accountId: string,
     ownerId: string,
     balance: number
     // Could add account creation timestamp, but ommited
 }
+
 export class Account {
     private readonly data: AccountType;
     private readonly MAX_OVERDRAFT: number = -200;
@@ -60,4 +63,8 @@ export class Account {
         return this.set('balance', updatedBalance)
     }
 
+    deposit(amount: number): Account {
+        const updatedBalance: number = this.getBalance() + amount;
+        return this.set('balance', updatedBalance)
+    }
 }
