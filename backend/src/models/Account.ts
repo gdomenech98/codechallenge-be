@@ -63,7 +63,7 @@ export class Account {
         return this.set('balance', updatedBalance)
     }
 
-    deposit(amount: number): Account {
+    deposit(amount: number): Account { // TOTEST
         const updatedBalance: number = this.getBalance() + amount;
         return this.set('balance', updatedBalance)
     }
