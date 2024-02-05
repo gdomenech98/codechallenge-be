@@ -3,12 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 export interface AccountType {
     accountId: string,
     ownerId: string,
-    balance: Number
+    balance: number
     // Could add account creation timestamp, but ommited
 }
 export class Account {
     private readonly data: AccountType;
-    private readonly MAX_OVERDRAFT = 200;
+    private readonly MAX_OVERDRAFT: number = -200;
 
     constructor(data: AccountType) {
         this.data = data;
@@ -30,12 +30,17 @@ export class Account {
         return this.get("accountId")
     }
 
-    getBalance(): Number {
+    getBalance(): number {
         return this.get('balance')
     }
 
     getOwner(): string {
         return this.get('ownerId')
+    }
+
+    set(key: keyof AccountType, value: any): Account {
+        const prevData = this.getData()
+        return Account.load({...prevData, [key]: value})
     }
 
     static create(ownerId: string, accountId?: string): Account {
@@ -47,10 +52,12 @@ export class Account {
         return Account.load(newAccountData)
     }
 
-    // withdraw(amount: Number): Account {
-        
-    //     return 
-    // }
+    withdraw(amount: number): Account {
+        const updatedBalance: number = this.getBalance() - amount
+        // Widthdraw validation
+        const isValid: boolean = updatedBalance > this.MAX_OVERDRAFT;
+        if(!isValid) throw `Could not withdraw ammount ${amount} from the account, maximum overdraft (${this.MAX_OVERDRAFT}) exceeded`
+        return this.set('balance', updatedBalance)
+    }
 
-    //Withdrawal supports a $200 overdraft (balance, can be down to -$200).
 }
