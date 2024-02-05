@@ -51,7 +51,6 @@ describe("test db connector 'mongodb' operations", () => {
             expect(deletedData2).toStrictEqual({ ...data2, _delete: true })
             expect(await db.list(COLLECTION, {})).toHaveLength(1)
             const deletedData1 = await db.delete(COLLECTION, { id: randomId1 })
-            console.log(deletedData1)
             expect(deletedData1).toStrictEqual({ ...deletedData1, _delete: true })
             try{
                 await db.list(COLLECTION, {})
