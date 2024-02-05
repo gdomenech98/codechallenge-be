@@ -23,3 +23,7 @@ npm i ts-node-dev --save-dev
 4. Check that testing environment is setup and working `npm run test`
 5. Create some models that emerged: Account and Transactions at `src/models/*`
 6. Validate some methods of the models created using TDD with jest. Create first unit tests for each model.
+7. Introduce docker in order to add db and solve infra / service discovery with db/backend (db choosen is mongodb due to flexibility)
+8. Create db connector with basic (sooo basic!) LCRUD operations and connection to db service. Add infra tests for this connector.
+9. Create 'repositories' encapsulation for db calls (infra) with the domain
+10. Create 'services', classes that operate with models and handle the business logic and interactions with models.
