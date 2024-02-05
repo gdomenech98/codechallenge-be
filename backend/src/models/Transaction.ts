@@ -12,7 +12,7 @@ export interface TransactionType {
 
 export class Transaction {
     private readonly data: TransactionType;
-    
+
     constructor(data: TransactionType) {
         this.data = data;
     }
@@ -44,7 +44,7 @@ export class Transaction {
     getToAccount(): number {
         try {
             return this.get("toAccountId")
-        }catch(e) {
+        } catch (e) {
             throw "This transaction has no desinary identifier (toAccountId)"
         }
     }
@@ -57,23 +57,24 @@ export class Transaction {
         return this.get('timestamp')
     }
 
-    static create( 
-        operation: TransactionType["operation"], 
+    static create(
+        operation: TransactionType["operation"],
         amount: number,
         fromAccountId: string,
         toAccountId?: string,
-        id?: string
-        ): Transaction {
+        id?: string,
+        timestamp?: number
+    ): Transaction {
         let newTransactionData: TransactionType = {
-            id: id??uuidv4(),
+            id: id ?? uuidv4(),
             operation: operation,
             amount,
             fromAccountId,
-            timestamp:  Date.now()
+            timestamp: timestamp ?? Date.now()
         }
-        if(operation === "TRANSFER") {
-            if(!toAccountId) throw `The destinatary should be specified when performing transaction of type "${operation}"`
-            newTransactionData = {...newTransactionData, toAccountId}
+        if (operation === "TRANSFER") {
+            if (!toAccountId) throw `The destinatary should be specified when performing transaction of type "${operation}"`
+            newTransactionData = { ...newTransactionData, toAccountId }
         }
         return Transaction.load(newTransactionData)
     }
