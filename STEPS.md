@@ -20,3 +20,6 @@ npm i ts-node-dev --save-dev
 }
 `
 - Now can run in dev mode with hot reload using: `npm run dev`
+4. Check that testing environment is setup and working `npm run test`
+5. Create some models that emerged: Account and Transactions at `src/models/*`
+6. Validate some methods of the models created using TDD with jest. Create first unit tests for each model.
