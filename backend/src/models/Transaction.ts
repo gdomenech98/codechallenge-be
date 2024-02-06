@@ -86,7 +86,8 @@ export class TransactionCollection { // WIP
     constructor(items: Transaction[]) {
         this.items = items;
     }
-    static load(items: Transaction[]): TransactionCollection {
+    static load(data: TransactionType[]): TransactionCollection {
+        const items = data.map((item: TransactionType) => Transaction.load(item))
         return new TransactionCollection(items)
     }
 
@@ -98,7 +99,10 @@ export class TransactionCollection { // WIP
         return this.getItems().length;
     }
 
-    // getDailyTransactions(): TransactionCollection{
-    //     return 
-    // }
+    totalAmount(): number{ // TOTEST
+        return this.getItems().reduce((total:number, item: Transaction) => {
+            const newTotal = total + item.getAmount()
+            return newTotal
+        }, 0)
+    }
 }
