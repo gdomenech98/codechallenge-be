@@ -17,8 +17,7 @@ const healthCheck = () => { // Check system is up and ready to use
     console.log('Running healthcheck, waiting to be ready...')
     return new Promise((resolve, reject) => {
         const isReady = () => {
-            console.log('DEV_SERVER_URL', DEV_SERVER_URL)
-            let isEnabled = execSync(`curl -s ${DEV_SERVER_URL} | grep -q "Running!" && echo true || echo false`, { encoding: 'utf-8' }).trim()
+            let isEnabled = execSync(`curl -s ${DEV_SERVER_URL} | grep -q Running! && echo true || echo false`, { encoding: 'utf-8' }).trim()
             if (isEnabled === 'true') {
                 console.log('System Ready!')
                 clearInterval(interval)
