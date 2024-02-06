@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OperationsService } from '../../services/OperationsService';
-import { Transaction } from '../../models/Transaction';
-import { Account } from '../../models/Account';
+import { Transaction, TransactionType } from '../../models/Transaction';
+import { Account, AccountType } from '../../models/Account';
 import { TransactionRepository } from '../../repositories/TransactionRepository';
 import { AccountRepository } from '../../repositories/AccountRepository';
 
@@ -59,8 +59,13 @@ describe("test Account and Transaction repositories", () => {
 
     describe.only('test operation service', () => {
         it("should be able to perform DEPOSIT operation", async () => {
-            await OperationsService.createOperation('DEPOSIT', 500, accountId1)
-            expect(true).toBe(true)
+            const { transaction: transactionData, account: accountData} = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const transaction = Transaction.load(transactionData)
+            const account = Account.load(accountData)
+            expect(transaction.getAmount()).toBe(500)
+            expect(transaction.getFromAccount()).toBe(accountId1)
+            expect(account.getBalance()).toBe(500)
+            expect(account.getId()).toBe(accountId1)
         })
     })
 })
