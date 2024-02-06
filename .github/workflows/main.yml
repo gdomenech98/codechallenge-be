@@ -25,11 +25,7 @@ jobs:
         docker-compose -v
 
     - name: Start dev
-      if: false
-      run: |
-        ./dev &
+      run: node .github/workflows/start.js
 
-    - name: Docker Compose down
-      if: false
-      run: |
-        ./test
+    - name: Run tests
+      run: ../../test
