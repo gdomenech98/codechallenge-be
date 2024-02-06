@@ -28,7 +28,7 @@ npm i ts-node-dev --save-dev
 9. Create 'repositories' encapsulation for db calls (infra) with the domain. The repositories just fetch data and return "raw" data, don't operate with models due that, at the moment, I want flexibility and the data management through infra be just "raw" data and not models.
 10. Create 'services', classes that operate with models and handle the business logic and interactions with models. TDD each operation performed at `services/OperationsService.ts`
 11. Create endpoints (deposit/transfer/withdraw) at App.ts. Add prefix `/api/v1`
-12. Add body parser to express app to handle JSON encoded body
+12. Add body parser middleware to express app to handle JSON encoded body
 13.
 
 
