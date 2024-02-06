@@ -9,6 +9,40 @@ describe('Unit Testing methods for Account Model', () => {
             balance: 100
         }
         const account = Account.load(accountData);
+        describe("validation data for Account", () => {
+            it("should validate data", () => {
+                const accountData: AccountType = {
+                    accountId: "1234",
+                    ownerId: "4321",
+                    balance: 100
+                }
+                expect(Account.validate(accountData)).toBe(true)
+            })
+            it("should fail validation no accountId specified", () => {
+                const accountData = {
+                    ownerId: "4321",
+                    balance: 100
+                }
+                try {
+                    Account.validate(accountData as AccountType)
+                    expect("Error. missing accountId").toBeFalsy() // Intentionally crash
+                } catch (e) {
+                    expect(e).toBe("Account should have an accountId")
+                }
+            })
+            it("should fail validation no accountId specified", () => {
+                const accountData = {
+                    accountId: "1234",
+                    balance: 100
+                }
+                try {
+                    Account.validate(accountData as AccountType)
+                    expect("Error. missing ownerId").toBeFalsy() // Intentionally crash
+                } catch (e) {
+                    expect(e).toBe("Account should have an ownerId")
+                }
+            })
+        })
         it("should load Account Model and retrieve back data from it", () => {
             const retrievedAccountData = account.getData();
             expect(retrievedAccountData).toStrictEqual(accountData) // Using "toStrictEqual" to avoid object references
@@ -81,12 +115,12 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     account.deposit(amount_to_deposit, TOTAL_DEPOSIT_LAST_24h).getBalance()
                     expect('Error could not deposit when daily deposit exceed 5000$').toBeFalsy()
-                }catch(error) {
+                } catch (error) {
                     expect(error).toBeTruthy()
                 }
             })
         })
-        describe("test transfer method", () => { 
+        describe("test transfer method", () => {
             it("should transfer amount, decreasing account balance", () => {
                 const updatedAccount = account.transfer(30);
                 expect(updatedAccount.getBalance()).toBe(70)
@@ -95,7 +129,7 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     account.transfer(101);
                     expect('Error: should crash, could not transfer specified amoun, overdraft exceeded').toBeFalsy() // Intentionally crash test
-                }catch(e) {
+                } catch (e) {
                     expect(e).toBe("Can not overdraw in transfer")
                 }
             })
