@@ -149,8 +149,8 @@ describe("test Account and Transaction repositories", () => {
                 try {
                     await OperationsService.createOperation('TRANSFER', 300, accountId3 as string, "1234")
                     expect("Error: can't transfer transferer without valid destinatary account id, make sure it exist").toBeFalsy()
-                } catch (error) {
-                    expect(error).toBe("Error: can't perform transfer, desinatary account doesn't exist.")
+                } catch (error: any) {
+                    expect(error.message).toBe("Error: can't perform transfer, desinatary account doesn't exist.")
                 }
             })
             it("should not be able to transfer with overdraft", async () => {
@@ -163,7 +163,7 @@ describe("test Account and Transaction repositories", () => {
                     expect(error.message).toBe('Can not overdraw in transfer')
                 }
             })
-        
+
         })
     })
 

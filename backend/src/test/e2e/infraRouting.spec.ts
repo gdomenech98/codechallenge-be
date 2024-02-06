@@ -25,7 +25,7 @@ describe("test endpoints", () => {
             await AccountRepository.create(account1.getData())
             await AccountRepository.create(account2.getData())
         } catch (e) {
-            throw "Could not create accounts"
+            throw new Error("Could not create accounts")
         }
     })
 

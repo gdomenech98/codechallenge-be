@@ -15,7 +15,7 @@ export class OperationsService {
     // find account where operation is performed
     const accountData = await AccountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
-    if (!accountData) throw "Can't perform operation, account doesn't exist" // This if is for healthchecking
+    if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
     let account = Account.load(accountData);
     let destinataryAccount: Account | undefined;
 
@@ -38,7 +38,7 @@ export class OperationsService {
         } catch (error) {
           dayAccountDeposits = 0
           if (error !== 'Not found') {
-            throw "Something wrong happened when trying to fetch transaction list."
+            throw new Error("Something wrong happened when trying to fetch transaction list.")
           }
         }
         account = account.deposit(amount, dayAccountDeposits)
@@ -47,11 +47,11 @@ export class OperationsService {
         account = account.withdraw(amount); // throw error if can't withdraw (considering overdraft)
         break
       case 'TRANSFER':
-        if (!toAccoundId) throw "Error: can't perform transfer, destinatary is not specified"
+        if (!toAccoundId) throw new Error("Error: can't perform transfer, destinatary is not specified")
         try {
           destinataryAccountData = await AccountRepository.read({ accountId: toAccoundId })
         } catch (e) {
-          throw "Error: can't perform transfer, desinatary account doesn't exist."
+          throw new Error("Error: can't perform transfer, desinatary account doesn't exist.")
         }
         // Once healthchecked the destinatary perform transfer
         destinataryAccount = Account.load(destinataryAccountData);
@@ -60,19 +60,19 @@ export class OperationsService {
         // update destinatary account 
         try {
           await AccountRepository.update({ accountId: toAccoundId }, destinataryAccount.getData())
-        } catch (e) {
-          throw "Error updating account. Error: " + e
+        } catch (e: any) {
+          throw new Error("Error updating account. Error: " + e.message)
         }
         break
       default:
-        throw `Unknown operation ${operation}`
+        throw new Error(`Unknown operation ${operation}`)
     }
 
     // Update from account 
     try {
       await AccountRepository.update({ accountId: fromAccountId }, account.getData())
-    } catch (e) {
-      throw "Error updating account. Error: " + e
+    } catch (e: any) {
+      throw new Error("Error updating account. Error: " + e.message)
     }
 
     // Create new transaction 
@@ -89,8 +89,8 @@ export class OperationsService {
         response["destinataryAccount"] = (destinataryAccount as Account).getData();
       }
       return response
-    } catch (e) {
-      throw "Error adding new transaction. Error: " + e
+    } catch (e: any) {
+      throw new Error("Error adding new transaction. Error: " + e.message)
     }
   }
 }
