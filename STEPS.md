@@ -27,10 +27,13 @@ npm i ts-node-dev --save-dev
 8. Create db connector with basic (sooo basic!) LCRUD operations and connection to db service. Add infra tests for this connector.
 9. Create 'repositories' encapsulation for db calls (infra) with the domain. The repositories just fetch data and return "raw" data, don't operate with models due that, at the moment, I want flexibility and the data management through infra be just "raw" data and not models.
 10. Create 'services', classes that operate with models and handle the business logic and interactions with models. TDD each operation performed at `services/OperationsService.ts`
-11. 
+11. Create endpoints (deposit/transfer/withdraw) at App.ts. Add prefix `/api/v1`
+12. Add body parser to express app to handle JSON encoded body
+13.
 
 
 
 
 Considerations:
 - Deposits can not be above $5000 per day --> I consider a day 24h from the moment action is performed, not natural days.
+- Now actions over accounts (withdraw, transfer, deposit) can be performed by anyone that knows account id, should add (in the future) any type of validation over, for example, JWT tokens.
