@@ -26,7 +26,12 @@ describe('Unit Testing methods for Transaction Model', () => {
 
         describe("should validate data to generate Transaction", () => {
             it('should validate transaction data', () => {
-                expect(Transaction.validate(transactionData)).toBe(true)
+                try {
+                    Transaction.validate(transactionData)
+                    expect("Validated").toBeTruthy()
+                }catch(e: any) {
+                    expect(e).toBeFalsy()
+                }
             })
             it('should fail validation, missing amount', () => {
                 const transactionData = {
@@ -38,8 +43,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. missing amount').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Transaction should have a possitive amount')
+                } catch (e: any) {
+                    expect(e.message).toBe('Transaction should have a possitive amount')
                 }
             })
             it('should fail validation, negative amount', () => {
@@ -53,8 +58,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. missing amount').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Transaction should have a possitive amount')
+                } catch (e: any) {
+                    expect(e.message).toBe('Transaction should have a possitive amount')
                 }
             })
             it('should fail validation, missing operation', () => {
@@ -67,8 +72,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. missing operation').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Transaction must specify an operation')
+                } catch (e: any) {
+                    expect(e.message).toBe('Transaction must specify an operation')
                 }
             })
             it('should fail validation, invalid operation', () => {
@@ -82,8 +87,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. invalid operation').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Invalid operation for transaction')
+                } catch (e: any) {
+                    expect(e.message).toBe('Invalid operation for transaction')
                 }
             })
             it('should fail validation, missing fromAccount', () => {
@@ -96,8 +101,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. missing fromAccount').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Transaction should have an fromAccountId')
+                } catch (e: any) {
+                    expect(e.message).toBe('Transaction should have an fromAccountId')
                 }
             })
             it('should fail validation, missing toAccount (with operation "TRANSFER")', () => {
@@ -111,8 +116,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect('Error. missing toAccountId').toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe('Transaction of type TRANSFER must specify a destination account')
+                } catch (e: any) {
+                    expect(e.message).toBe('Transaction of type TRANSFER must specify a destination account')
                 }
             })
 
@@ -128,8 +133,8 @@ describe('Unit Testing methods for Transaction Model', () => {
                 try {
                     Transaction.validate(transactionData as TransactionType)
                     expect("Error. can't have same fromAccountId and toAccountId").toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe("Transaction couldn't have same source and destinatary account")
+                } catch (e: any) {
+                    expect(e.message).toBe("Transaction couldn't have same source and destinatary account")
                 }
             })
         })

@@ -1,13 +1,14 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
+export type OperationType = "WITHDRAW" | "TRANSFER" | "DEPOSIT"
 export interface TransactionType {
-    id: string,
-    operation: "WITHDRAW" | "TRANSFER" | "DEPOSIT",
-    amount: number,
-    timestamp: number,
-    fromAccountId: string,
-    toAccountId?: string // optional, necessary data only for "TRANSFER"
+    id: string;
+    operation: OperationType;
+    amount: number;
+    timestamp: number;
+    fromAccountId: string;
+    toAccountId?: string; // optional, necessary data only for "TRANSFER"
 }
 
 export class Transaction {
@@ -17,18 +18,17 @@ export class Transaction {
         this.data = data;
     }
 
-    static validate(data: TransactionType): boolean {
-        if (!data.amount || data.amount <= 0) throw "Transaction should have a possitive amount"
-        if (data.fromAccountId === undefined) throw "Transaction should have an fromAccountId"
-        if (data.operation === undefined) throw "Transaction must specify an operation"
-        if (!["WITHDRAW", "TRANSFER", "DEPOSIT"].includes(data.operation)) throw "Invalid operation for transaction"
-        if (data.operation === "TRANSFER" && data.toAccountId === undefined) throw "Transaction of type TRANSFER must specify a destination account"
-        if (data.fromAccountId === data.toAccountId) throw "Transaction couldn't have same source and destinatary account"
-        return true
+    static validate(data: TransactionType): void {
+        if (!data.amount || data.amount <= 0) throw new Error("Transaction should have a possitive amount")
+        if (data.fromAccountId === undefined) throw new Error("Transaction should have an fromAccountId")
+        if (data.operation === undefined) throw new Error("Transaction must specify an operation")
+        if (!["WITHDRAW", "TRANSFER", "DEPOSIT"].includes(data.operation)) throw new Error("Invalid operation for transaction")
+        if (data.operation === "TRANSFER" && data.toAccountId === undefined) throw new Error("Transaction of type TRANSFER must specify a destination account")
+        if (data.fromAccountId === data.toAccountId) throw new Error("Transaction couldn't have same source and destinatary account")
     }
 
     static load(data: TransactionType): Transaction {
-        if (!Transaction.validate(data)) throw "No valid data for Transaction"
+        Transaction.validate(data)
         return new Transaction(data)
     }
 
@@ -36,7 +36,7 @@ export class Transaction {
         return this.data;
     }
 
-    get(key: keyof TransactionType): any {
+    get<T extends keyof TransactionType>(key: T): TransactionType[T] {
         return this.getData()[key]
     }
 
@@ -48,19 +48,15 @@ export class Transaction {
         return this.get("amount")
     }
 
-    getFromAccount(): number {
+    getFromAccount(): string {
         return this.get("fromAccountId")
     }
 
-    getToAccount(): number {
-        try {
-            return this.get("toAccountId")
-        } catch (e) {
-            throw "This transaction has no desinary identifier (toAccountId)"
-        }
+    getToAccount(): string | undefined {
+        return this.get("toAccountId")
     }
 
-    getOperationType(): keyof TransactionType["operation"] {
+    getOperationType(): OperationType {
         return this.get('operation')
     }
 
@@ -68,8 +64,13 @@ export class Transaction {
         return this.get('timestamp')
     }
 
+    set<T extends keyof TransactionType>(key: T, value: TransactionType[T]): Transaction {
+        const prevData = this.getData()
+        return Transaction.load({ ...prevData, [key]: value })
+    }
+
     static create(
-        operation: TransactionType["operation"],
+        operation: OperationType,
         amount: number,
         fromAccountId: string,
         toAccountId?: string,
