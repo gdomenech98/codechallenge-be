@@ -3,13 +3,11 @@ version: '2'
 services:
   backend:
     restart: always
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: node:20-bullseye-slim
+    entrypoint: "/bin/bash"
+    command: -c "npm run build && npm ci --production && npm run start"
     container_name: backend
     working_dir: "/backend"
-    entrypoint: "/bin/bash"
-    command: -c "npm run build && npm run start"
     volumes:
       - ./backend:/backend
     ports:
