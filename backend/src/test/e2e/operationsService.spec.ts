@@ -34,13 +34,21 @@ describe("test Account and Transaction repositories", () => {
         await TransactionRepository.create(transaction2_f1_t2.getData())
         await TransactionRepository.create(transaction3_f1_t2_outdated.getData())
     })
-    it('should retrieve all created accounts', async () => {
-        const accounts = await AccountRepository.list({});
+    it('should retrieve all created accounts (in this test)', async () => {
+        const accounts = await AccountRepository.list({
+            accountId: {
+                $in: [accountId1, accountId2]
+            }
+        });
         expect(accounts).toHaveLength(2)
     })
-    it('should retrieve all created transactions', async () => {
-        const transactions = await TransactionRepository.list({});
-        expect(transactions).toHaveLength(2)
+    it('should retrieve all created transactions (in this test)', async () => {
+        const transactions = await TransactionRepository.list({
+            id: {
+                $in: [transactionId1, transactionId2, transactionId3]
+            }
+        });
+        expect(transactions).toHaveLength(3)
     })
     it('should be able to retrieve specific accounts by accountId', async () => {
         const accounts = await AccountRepository.list({ accountId: accountId1 })
@@ -53,11 +61,10 @@ describe("test Account and Transaction repositories", () => {
     })
     it('should be able to retrieve specific account by ownerId', async () => {
         const accountData = await AccountRepository.read({ ownerId: ownerId1 })
-        console.log('accountData: ', accountData)
         expect(Account.load(accountData).getOwner()).toBe(ownerId1)
     })
 
-    describe.only('test operation service', () => {
+    describe('test operation service', () => {
         it("should be able to perform DEPOSIT operation", async () => {
             const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as { transaction: TransactionType, account: AccountType }
             const transaction = Transaction.load(transactionData)
@@ -84,6 +91,12 @@ describe("test Account and Transaction repositories", () => {
             } catch (e) {
                 expect(e).toBeTruthy()
             }
+        })
+        it.skip("should be able to perform TRANSFER operation", async () => {
+            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const transaction = Transaction.load(transactionData)
+            const account = Account.load(accountData)
+
         })
     })
 
