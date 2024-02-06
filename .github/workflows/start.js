@@ -3,7 +3,7 @@ const execSync = require('child_process').execSync;
 const exec = require('child_process').exec;
 
 const PROJECT_DIR = path.join(__dirname, "..", "..")
-const DEV_SERVER_URL = "http://127.0.0.1:3300/api/v1/healthcheck"
+const DEV_SERVER_URL = "http://localhost:3300/api/v1/healthcheck"
 const args = process.argv.slice(2);
 const timeout = args[0] ?? 10000;// default 10s
 const RETRY_TIME = 1000 // 1 sec
@@ -17,6 +17,7 @@ const healthCheck = () => { // Check system is up and ready to use
     console.log('Running healthcheck, waiting to be ready...')
     return new Promise((resolve, reject) => {
         const isReady = () => {
+            console.log('DEV_SERVER_URL', DEV_SERVER_URL)
             let isEnabled = execSync(`curl -s ${DEV_SERVER_URL} | grep -q "Running!" && echo true || echo false`, { encoding: 'utf-8' }).trim()
             if (isEnabled === 'true') {
                 console.log('System Ready!')
