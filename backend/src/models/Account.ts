@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export interface AccountType {
-    accountId: string,
-    ownerId: string,
-    balance: number
+    accountId: string;
+    ownerId: string;
+    balance: number;
     // Could add account creation timestamp, but ommited
 }
 
@@ -17,14 +17,13 @@ export class Account {
         this.data = data;
     }
 
-    static validate(data: AccountType): boolean {
-        if(!data.accountId) throw "Account should have an accountId"
-        if(!data.ownerId) throw "Account should have an ownerId"
-        return true
+    static validate(data: AccountType): void {
+        if(!data.accountId) throw new Error("Account should have an accountId")
+        if(!data.ownerId) throw new Error("Account should have an ownerId")
     }
 
     static load(data: AccountType): Account {
-        if(!Account.validate(data)) throw "No valid data for Account"
+        Account.validate(data)
         return new Account(data)
     }
 
@@ -32,11 +31,11 @@ export class Account {
         return this.data;
     }
 
-    get(key: keyof AccountType): any {
+    get<T extends keyof AccountType>(key: T): AccountType[T] {
         return this.getData()[key]
     }
 
-    getId(): any {
+    getId(): string {
         return this.get("accountId")
     }
 
@@ -48,7 +47,7 @@ export class Account {
         return this.get('ownerId')
     }
 
-    set(key: keyof AccountType, value: any): Account {
+    set<T extends keyof AccountType>(key: T, value: AccountType[T]): Account {
         const prevData = this.getData()
         return Account.load({ ...prevData, [key]: value })
     }

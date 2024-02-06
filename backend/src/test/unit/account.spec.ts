@@ -16,7 +16,12 @@ describe('Unit Testing methods for Account Model', () => {
                     ownerId: "4321",
                     balance: 100
                 }
-                expect(Account.validate(accountData)).toBe(true)
+                try {
+                    Account.validate(accountData)
+                    expect('Validate healthcheck').toBeTruthy()
+                } catch (e) {
+                    expect(e).toBeFalsy()
+                }
             })
             it("should fail validation no accountId specified", () => {
                 const accountData = {
@@ -26,8 +31,8 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     Account.validate(accountData as AccountType)
                     expect("Error. missing accountId").toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe("Account should have an accountId")
+                } catch (e: any) {
+                    expect(e.message).toBe("Account should have an accountId")
                 }
             })
             it("should fail validation no accountId specified", () => {
@@ -38,8 +43,8 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     Account.validate(accountData as AccountType)
                     expect("Error. missing ownerId").toBeFalsy() // Intentionally crash
-                } catch (e) {
-                    expect(e).toBe("Account should have an ownerId")
+                } catch (e:any) {
+                    expect(e.message).toBe("Account should have an ownerId")
                 }
             })
         })
