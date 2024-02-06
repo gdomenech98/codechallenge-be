@@ -7,6 +7,7 @@ Docker: Docker version 24.0.5, build ced0996
 Docker-compose: Docker Compose version v2.20.2-desktop.1
 ```
 2. ONLY FOR DEVELOPMENT PURPOSES. development mode with hotreload `./start`
+2.1. RUN TESTS IN PROD MODE TO HEALTHCECK: `./test`
 3. FOR PRODUCTION: `./prod`
 
 # Steps/decisions made 
@@ -56,4 +57,4 @@ npm i ts-node-dev --save-dev
 # Todo:
 - Fix warning `A worker process has failed to exit gracefully...`` at test `should be able to perform TRANSFER operation` in `operationsService.spec.ts`
 - Refactor operations Service spec to do isolated testing on each "it"
-- Add prod mode, that build and runs the compiled JS code
+- Could improve production environments to optimize container sizes/resources
