@@ -17,7 +17,14 @@ export class Account {
         this.data = data;
     }
 
+    static validate(data: AccountType): boolean {
+        if(!data.accountId) throw "Account should have an accountId"
+        if(!data.ownerId) throw "Account should have an ownerId"
+        return true
+    }
+
     static load(data: AccountType): Account {
+        if(!Account.validate(data)) throw "No valid data"
         return new Account(data)
     }
 
