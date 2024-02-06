@@ -29,7 +29,7 @@ npm i ts-node-dev --save-dev
 10. Create 'services', classes that operate with models and handle the business logic and interactions with models. TDD each operation performed at `services/OperationsService.ts`
 11. Create endpoints (deposit/transfer/withdraw) at App.ts. Add prefix `/api/v1`
 12. Add body parser middleware to express app to handle JSON encoded body
-13.
+13. Test endpoints `infraRouting.specs.ts`
 
 
 
@@ -37,3 +37,7 @@ npm i ts-node-dev --save-dev
 Considerations:
 - Deposits can not be above $5000 per day --> I consider a day 24h from the moment action is performed, not natural days.
 - Now actions over accounts (withdraw, transfer, deposit) can be performed by anyone that knows account id, should add (in the future) any type of validation over, for example, JWT tokens.
+
+Todo:
+- Refactor operations Service spec to do isolated testing on each "it"
+- Add prod mode, that build and runs the compiled JS code
