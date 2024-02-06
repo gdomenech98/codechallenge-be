@@ -86,11 +86,25 @@ describe('Unit Testing methods for Account Model', () => {
                 }
             })
         })
-        describe.skip("test transfer method", () => { // TODO
-
+        describe("test transfer method", () => { 
+            it("should transfer amount, decreasing account balance", () => {
+                const updatedAccount = account.transfer(30);
+                expect(updatedAccount.getBalance()).toBe(70)
+            })
+            it("should not transfer amount, overdraft exceed", () => {
+                try {
+                    account.transfer(101);
+                    expect('Error: should crash, could not transfer specified amoun, overdraft exceeded').toBeFalsy() // Intentionally crash test
+                }catch(e) {
+                    expect(e).toBe("Can not overdraw in transfer")
+                }
+            })
         })
-        describe.skip("test recieveTransfer method", () => { // TODO
-
+        describe("test recieveTransfer method", () => {
+            const updatedAccount = account.recieveTransfer(30);
+            it("should recieve transfer", () => {
+                expect(updatedAccount.getBalance()).toBe(130)
+            })
         })
     });
 });
