@@ -6,7 +6,7 @@ NodeJS: [v20.4.0, v20.5.0]
 Docker: Docker version 24.0.5, build ced0996
 Docker-compose: Docker Compose version v2.20.2-desktop.1
 ```
-2. ONLY FOR DEVELOPMENT PURPOSES. development mode with hotreload `./start`
+2. ONLY FOR DEVELOPMENT PURPOSES. development mode with hotreload `./dev`
 2.1. RUN TESTS IN PROD MODE TO HEALTHCECK: `./test`
 3. FOR PRODUCTION: `./prod`
 
@@ -36,7 +36,7 @@ npm i ts-node-dev --save-dev
 4. Check that testing environment is setup and working `npm run test`
 5. Create some models that emerged: Account and Transactions at `src/models/*`
 6. Validate some methods of the models created using TDD with jest. Create first unit tests for each model.
-7. Introduce docker/docker-compose in order to add db and solve infra / service discovery with db/backend (db choosen is mongodb due to flexibility). Add scripts `start` to start docker (Unix script!)
+7. Introduce docker/docker-compose in order to add db and solve infra / service discovery with db/backend (db choosen is mongodb due to flexibility). Add scripts `dev` to start docker (Unix script!)
 8. Create db connector with basic (sooo basic!) LCRUD operations and connection to db service. Add infra tests for this connector.
 9. Create 'repositories' encapsulation for db calls (infra) with the domain. The repositories just fetch data and return "raw" data, don't operate with models due that, at the moment, I want flexibility and the data management through infra be just "raw" data and not models.
 10. Create 'services', classes that operate with models and handle the business logic and interactions with models. TDD each operation performed at `services/OperationsService.ts`
@@ -58,3 +58,5 @@ npm i ts-node-dev --save-dev
 - Fix warning `A worker process has failed to exit gracefully...`` at test `should be able to perform TRANSFER operation` in `operationsService.spec.ts`
 - Refactor operations Service spec to do isolated testing on each "it"
 - Could improve production environments to optimize container sizes/resources
+- dev and prod share ports, could change it to have different ports in prod and dev.
+- Add regex to jest config to avoid jest from executing tests at /dist
