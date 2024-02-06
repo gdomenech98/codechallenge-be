@@ -55,6 +55,11 @@ export class App {
                 response.status(500).send(e)
             }
         })
+
+        this.express.get('/api/v1/healthcheck', (request: Request, response: Response) => {
+             response.send("Running!")
+ﬁ       })
+        
         this.server = this.express.listen(this.port)
     }
 
