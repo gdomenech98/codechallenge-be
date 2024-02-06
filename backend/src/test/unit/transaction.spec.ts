@@ -1,8 +1,9 @@
 
-import { Transaction, TransactionType } from "../../models/Transaction";
+import exp from "constants";
+import { Transaction, TransactionCollection, TransactionType } from "../../models/Transaction";
 
 describe('Unit Testing methods for Transaction Model', () => {
-    describe('should be able to create an Account', () => {
+    describe('should be able to operate with Transaction', () => {
         const current_ts: number = Date.now();
         const transactionData: TransactionType = {
             id: '1',
@@ -93,3 +94,31 @@ describe('Unit Testing methods for Transaction Model', () => {
         })
     });
 });
+describe('Unit Testing methods for TransactionCollection', () => {
+    const transactionData_1: TransactionType = {
+        id: '1',
+        operation: "WITHDRAW",
+        amount: 100,
+        timestamp: Date.now(),
+        fromAccountId: "1234"
+    }
+    const transactionData_2: TransactionType = {
+        id: '2',
+        operation: "WITHDRAW",
+        amount: 100,
+        timestamp: Date.now(),
+        fromAccountId: "4321",
+    } 
+    const transactionArr = [transactionData_1, transactionData_2];
+    const transactionCollection = TransactionCollection.load(transactionArr);
+    it("should retrieve transaction collection length", () => {
+        expect(transactionCollection.length()).toBe(2)
+    })
+    it("should retrieve items from transaction collection", () => {
+        expect(transactionCollection.getItems()[0]).toStrictEqual(Transaction.load(transactionData_1))
+        expect(transactionCollection.getItems()[1]).toStrictEqual(Transaction.load(transactionData_2))
+    })
+    it("should retrieve total amount from transaction collection", () => {
+        expect(transactionCollection.totalAmount()).toBe(200)
+    })
+})
