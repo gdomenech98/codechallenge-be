@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { OperationsService } from '../../services/OperationsService';
-import { Transaction, TransactionType } from '../../models/Transaction';
+import { OperationType, OperationsService } from '../../services/OperationsService';
+import { Transaction } from '../../models/Transaction';
 import { Account, AccountType } from '../../models/Account';
 import { TransactionRepository } from '../../repositories/TransactionRepository';
 import { AccountRepository } from '../../repositories/AccountRepository';
@@ -66,7 +66,7 @@ describe("test Account and Transaction repositories", () => {
 
     describe('test operation service', () => {
         it("should be able to perform DEPOSIT operation", async () => {
-            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as OperationType
             const transaction = Transaction.load(transactionData)
             const account = Account.load(accountData)
             expect(transaction.getAmount()).toBe(500)
@@ -75,28 +75,80 @@ describe("test Account and Transaction repositories", () => {
             expect(account.getId()).toBe(accountId1)
         })
         it("should be able to perform WITHDRAW operation", async () => {
-            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('WITHDRAW', 500, accountId1) as OperationType
             const transaction = Transaction.load(transactionData)
             const account = Account.load(accountData)
             expect(transaction.getAmount()).toBe(500)
             expect(transaction.getFromAccount()).toBe(accountId1)
             expect(account.getBalance()).toBe(0)
             expect(account.getId()).toBe(accountId1)
-            const { account: accountData_overdrawed } = await OperationsService.createOperation('WITHDRAW', 100, accountId1) as { transaction: TransactionType, account: AccountType }
+            const { account: accountData_overdrawed } = await OperationsService.createOperation('WITHDRAW', 100, accountId1) as OperationType
             const account_overdrawed = Account.load(accountData_overdrawed)
             expect(account_overdrawed.getBalance()).toBe(-100)
             try {
-                await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+                await OperationsService.createOperation('WITHDRAW', 500, accountId1) as OperationType
                 expect('Operation error max overdraw exceeded').toBeFalsy() // Make sure test crash
             } catch (e) {
                 expect(e).toBeTruthy()
             }
         })
-        it.skip("should be able to perform TRANSFER operation", async () => {
-            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
-            const transaction = Transaction.load(transactionData)
-            const account = Account.load(accountData)
+        it("should be able to perform TRANSFER operation", async () => {
+            // Instance new accounts
+            const accountId3 = uuidv4()
+            const accountId4 = uuidv4()
+            const ownerId3 = uuidv4()
+            const ownerId4 = uuidv4()
+            const account3 = Account.create(ownerId3, accountId3)
+            const account4 = Account.create(ownerId4, accountId4)
+            await AccountRepository.create(account3.getData())
+            await AccountRepository.create(account4.getData())
+            let account3Data = await AccountRepository.read({ accountId: accountId3 })
+            let account4Data = await AccountRepository.read({ accountId: accountId4 })
+            expect(Account.load(account3Data).getBalance()).toBe(0)
+            expect(Account.load(account4Data).getBalance()).toBe(0)
+            // Deposit at account 3 -> 300$
+            await OperationsService.createOperation('DEPOSIT', 300, accountId3)
+            account3Data = await AccountRepository.read({ accountId: accountId3 })
+            account4Data = await AccountRepository.read({ accountId: accountId4 })
+            expect(Account.load(account3Data).getBalance()).toBe(300);
+            expect(Account.load(account4Data).getBalance()).toBe(0);
+            // Transfer account 3 -> 4 300$
+            const { transaction, account: accountData_from, destinataryAccount: accountData_to } = await OperationsService.createOperation('TRANSFER', 300, accountId3, accountId4) as OperationType
+            expect(Account.load(accountData_from).getBalance()).toBe(0);
+            expect(Account.load(accountData_to as AccountType).getBalance()).toBe(300);
+            expect(Transaction.load(transaction).getFromAccount()).toBe(accountId3);
+            expect(Transaction.load(transaction).getToAccount()).toBe(accountId4);
+            // Try to perform Transfer without toAccountId
+            try {
+                await OperationsService.createOperation('TRANSFER', 300, accountId3)
+                expect("Error: can't transfer without specify the destinatary").toBeFalsy()
+            } catch (error) {
+                expect(error).toBeTruthy()
+            }
 
+            // Try to perform Transfer with wrong fromAccount
+            try {
+                await OperationsService.createOperation('TRANSFER', 300, "1234", accountId4)
+                expect("Error: can't transfer transferer without valid account id, make sure it exist").toBeFalsy()
+            } catch (error) {
+                expect(error).toBe("Not found")
+            }
+            // Try to perform Transfer with wrong toAccount
+            try {
+                await OperationsService.createOperation('TRANSFER', 300, accountId3, "1234")
+                expect("Error: can't transfer transferer without valid destinatary account id, make sure it exist").toBeFalsy()
+            } catch (error) {
+                expect(error).toBe("Error: can't perform transfer, desinatary account doesn't exist.")
+            }
+            // Try to perform transfer with overdraft
+            try {
+                account3Data = await AccountRepository.read({ accountId: accountId3 })
+                expect(Account.load(account3Data).getBalance()).toBe(0) // Check balance is 0
+                await OperationsService.createOperation('TRANSFER', 300, accountId3, accountId4)
+                expect("Error: can't transfer exceeding outdraw").toBeFalsy()
+            } catch (error) {
+                expect(error).toBe('Can not overdraw in transfer')
+            }
         })
     })
 

@@ -3,16 +3,21 @@ import { TransactionCollection, TransactionType, Transaction } from "../models/T
 import { AccountRepository } from "../repositories/AccountRepository";
 import { TransactionRepository } from "../repositories/TransactionRepository";
 
+export interface OperationType { 
+  transaction: TransactionType, 
+  account: AccountType, 
+  destinataryAccount?:AccountType 
+}
 export class OperationsService {
   constructor() { }
 
-  static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<{ transaction: TransactionType, account: AccountType } | undefined> {
+  static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<OperationType | undefined> {
     // find account where operation is performed
     const accountData = await AccountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
     if (!accountData) throw "Can't perform operation, account doesn't exist" // This if is for healthchecking
     let account = Account.load(accountData);
-    let destinataryAccount: Account;
+    let destinataryAccount: Account | undefined;
 
     switch (operation) {
       case 'DEPOSIT':
@@ -41,7 +46,7 @@ export class OperationsService {
       case 'WITHDRAW':
         account = account.withdraw(amount); // throw error if can't withdraw (considering overdraft)
         break
-      case 'TRANSFER': // TOTEST
+      case 'TRANSFER':
         if (!toAccoundId) throw "Error: can't perform transfer, destinatary is not specified"
         try {
           destinataryAccountData = await AccountRepository.read({ accountId: toAccoundId })
@@ -59,6 +64,8 @@ export class OperationsService {
           throw "Error updating account. Error: " + e
         }
         break
+      default:
+        throw `Unknown operation ${operation}`
     }
 
     // Update from account 
@@ -77,7 +84,11 @@ export class OperationsService {
         performedTransactionData = Transaction.create(operation, amount, fromAccountId).getData()
       }
       await TransactionRepository.create(performedTransactionData)
-      return { account: account.getData(), transaction: performedTransactionData }
+      const response = { account: account.getData(), transaction: performedTransactionData } as OperationType
+      if(operation === 'TRANSFER') {
+        response["destinataryAccount"] = (destinataryAccount as Account).getData();
+      }
+      return response
     } catch (e) {
       throw "Error adding new transaction. Error: " + e
     }
