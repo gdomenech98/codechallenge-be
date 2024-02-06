@@ -1,4 +1,4 @@
-import { MongoDB } from "../connectors/db"
+import { MongoDB } from "../../connectors/db"
 import { v4 as uuidv4 } from 'uuid';
 
 describe("test db connector 'mongodb' operations", () => {
