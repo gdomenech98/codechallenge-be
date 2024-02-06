@@ -1,3 +1,5 @@
+# 🚨 STEPS.md has all the steps/considerations i've made!
+
 # Bank Account API
 Develop a Bank REST API using Node.js, with the following functionalities
 

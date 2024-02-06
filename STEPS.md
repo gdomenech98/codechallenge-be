@@ -43,7 +43,7 @@ npm i ts-node-dev --save-dev
 11. Create endpoints (deposit/transfer/withdraw) at App.ts. Add prefix `/api/v1`
 12. Add body parser middleware to express app to handle JSON encoded body
 13. Test endpoints `infraRouting.specs.ts`
-
+14. EXTRA: Add CI/CD that runns tests in GithubActions!
 
 
 # Considerations:
