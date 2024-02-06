@@ -24,7 +24,7 @@ export class Account {
     }
 
     static load(data: AccountType): Account {
-        if(!Account.validate(data)) throw "No valid data"
+        if(!Account.validate(data)) throw "No valid data for Account"
         return new Account(data)
     }
 

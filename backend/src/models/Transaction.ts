@@ -17,7 +17,18 @@ export class Transaction {
         this.data = data;
     }
 
+    static validate(data: TransactionType): boolean {
+        if (data.amount === undefined) throw "Transaction should have an amount"
+        if (data.amount <= 0) throw "Transaction should have a possitive amount"
+        if (data.fromAccountId === undefined) throw "Transaction should have an fromAccountId"
+        if (data.operation === undefined) throw "Transaction must specify an operation"
+        if (!["WITHDRAW", "TRANSFER", "DEPOSIT"].includes(data.operation)) throw "Invalid operation for transaction"
+        if (data.operation === "TRANSFER" && data.toAccountId === undefined) throw "Transaction of type TRANSFER must specify a destination account"
+        return true
+    }
+
     static load(data: TransactionType): Transaction {
+        if(!Transaction.validate(data)) throw "No valid data for Transaction"
         return new Transaction(data)
     }
 
@@ -86,6 +97,7 @@ export class TransactionCollection { // WIP
     constructor(items: Transaction[]) {
         this.items = items;
     }
+
     static load(data: TransactionType[]): TransactionCollection {
         const items = data.map((item: TransactionType) => Transaction.load(item))
         return new TransactionCollection(items)
@@ -99,8 +111,8 @@ export class TransactionCollection { // WIP
         return this.getItems().length;
     }
 
-    totalAmount(): number{
-        return this.getItems().reduce((total:number, item: Transaction) => {
+    totalAmount(): number {
+        return this.getItems().reduce((total: number, item: Transaction) => {
             const newTotal = total + item.getAmount()
             return newTotal
         }, 0)
