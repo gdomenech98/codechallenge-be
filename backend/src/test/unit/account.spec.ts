@@ -86,5 +86,11 @@ describe('Unit Testing methods for Account Model', () => {
                 }
             })
         })
+        describe.skip("test transfer method", () => { // TODO
+
+        })
+        describe.skip("test recieveTransfer method", () => { // TODO
+
+        })
     });
 });
