@@ -27,7 +27,7 @@ describe('Unit Testing methods for Account Model', () => {
             const retrievedAccountData = account.getData();
             expect(retrievedAccountData).toStrictEqual({ ...accountData, balance: 0 })
         })
-        it("should update account, with new instance, given a key with specified value", ()=> {
+        it("should update account, with new instance, given a key with specified value", () => {
             const accountData_1: AccountType = {
                 accountId: "1234",
                 ownerId: "4321",
@@ -42,7 +42,7 @@ describe('Unit Testing methods for Account Model', () => {
             const modifiedAccountData_1 = account_1.set('balance', 22).getData()
             expect(modifiedAccountData_1).toStrictEqual(expectedAccountData)
         })
-        describe("withdraw method", () => {
+        describe("test withdraw method", () => {
             it("should withdraw when balance doesn't overdraw the maximum overdraw allowed", () => {
                 expect(account.getBalance()).toBe(100); // Check that initial balance is correct
                 const WITHDRAW_AMOUNT = 50;
@@ -61,6 +61,26 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     account.withdraw(WITHDRAW_AMOUNT);
                     expect('Not have error').toBeFalsy() // Make test crash intentionally, bc it's suposed to don't be able to withdraw
+                } catch (error) {
+                    expect(error).toBeTruthy()
+                }
+            })
+        })
+        describe("test deposit method", () => {
+            it("should deposit when daily deposit quantity is not exceeded", () => {
+                const TOTAL_DEPOSIT_LAST_24h = 4500
+                const amount_to_deposit = 500
+                expect(account.getBalance()).toBe(100); // Check that initial balance is correct
+                const updatedBalance = account.deposit(amount_to_deposit, TOTAL_DEPOSIT_LAST_24h).getBalance()
+                expect(updatedBalance).toBe(account.getBalance() + amount_to_deposit)
+            })
+            it("should not be able to diposit when daily deposit quantity is exceeded", () => {
+                const TOTAL_DEPOSIT_LAST_24h = 5000
+                const amount_to_deposit = 10
+                expect(account.getBalance()).toBe(100); // Check that initial balance is correct
+                try {
+                    account.deposit(amount_to_deposit, TOTAL_DEPOSIT_LAST_24h).getBalance()
+                    expect('Error could not deposit when daily deposit exceed 5000$').toBeFalsy()
                 }catch(error) {
                     expect(error).toBeTruthy()
                 }

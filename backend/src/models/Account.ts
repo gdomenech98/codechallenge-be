@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export const MAX_DEPOSIT_PER_DAY: number = 5000;
 
 export interface AccountType {
     accountId: string,
@@ -12,6 +11,7 @@ export interface AccountType {
 export class Account {
     private readonly data: AccountType;
     private readonly MAX_OVERDRAFT: number = -200;
+    private readonly MAX_DEPOSIT_PER_DAY: number = 5000;
 
     constructor(data: AccountType) {
         this.data = data;
@@ -63,7 +63,8 @@ export class Account {
         return this.set('balance', updatedBalance)
     }
 
-    deposit(amount: number): Account { // TOTEST
+    deposit(amount: number, dailyDepositedAmount: number): Account { 
+        if(amount + dailyDepositedAmount > this.MAX_DEPOSIT_PER_DAY) throw `Could not diposito amount ${amount}, maximum deposit per day (${this.MAX_DEPOSIT_PER_DAY}$/24h) exceeded`
         const updatedBalance: number = this.getBalance() + amount;
         return this.set('balance', updatedBalance)
     }
