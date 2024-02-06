@@ -5,7 +5,7 @@ const exec = require('child_process').exec;
 const PROJECT_DIR = path.join(__dirname, "..", "..")
 const DEV_SERVER_URL = "http://localhost:3300/api/v1/healthcheck"
 const args = process.argv.slice(2);
-const timeout = args[0] ?? 10000;// default 10s
+const timeout = args[0] ?? 180000;// default 3min
 const RETRY_TIME = 1000 // 1 sec
 // Run project
 const start = () => {
