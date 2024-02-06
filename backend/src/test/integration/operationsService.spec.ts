@@ -141,8 +141,8 @@ describe("test Account and Transaction repositories", () => {
                 try {
                     await OperationsService.createOperation('TRANSFER', 300, "1234", accountId4)
                     expect("Error: can't transfer transferer without valid account id, make sure it exist").toBeFalsy()
-                } catch (error) {
-                    expect(error).toBe("Not found")
+                } catch (error: any) {
+                    expect(error.message).toBe("Not found")
                 }
             })
             it("should not perform transfer with wrong toAccount", async () => {

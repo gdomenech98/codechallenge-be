@@ -55,8 +55,8 @@ describe("test db connector 'mongodb' operations", () => {
             try{
                 await db.list(COLLECTION, {})
                 expect('List has no items, should throw an exception').toBeFalsy();
-            }catch(e){
-                expect(e).toBe('Not found')
+            }catch(e: any){
+                expect(e.message).toBe('Not found')
             }
         })
     })

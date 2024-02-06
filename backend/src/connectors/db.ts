@@ -13,16 +13,16 @@ export class MongoDB {
             const client: MongoClient = await new MongoClient(uri).connect()
             return new this(client);
         } catch (e: any) {
-            throw "Could not connect client"
+            throw new Error("Could not connect client")
         }
     }
 
     static async connect(uri?: string): Promise<MongoDB> {
         try {
             return MongoDB._newInstance(uri)
-        } catch (e) {
+        } catch (e: any) {
             console.error("Failed to connect to: ", uri)
-            throw e
+            throw new Error(e)
         }
     }
 
@@ -38,15 +38,15 @@ export class MongoDB {
         const collection = this.getDB().collection(collectionName);
         if (!showDeleted) dbquery = { ...dbquery, _delete: { $exists: false } }
         const data = await collection.find(dbquery).toArray();
-        if (data.length == 0) throw "Not found"
+        if (data.length == 0) throw new Error("Not found")
         return data
     }
 
-    async read(collectionName: string, dbquery: any, showDeleted?: boolean):Promise<any> {
+    async read(collectionName: string, dbquery: any, showDeleted?: boolean): Promise<any> {
         const collection = this.getDB().collection(collectionName);
         if (!showDeleted) dbquery = { ...dbquery, _delete: { $exists: false } }
         const data = await collection.findOne(dbquery)
-        if (!data) throw "Not found"
+        if (!data) throw new Error("Not found")
         return data
     }
 
@@ -56,7 +56,7 @@ export class MongoDB {
             await collection.insertOne(data)
             return data
         } catch (e: any) {
-            if (e.code == 11000) throw "Duplicated key"
+            if (e.code == 11000) throw new Error("Duplicated key")
         }
     }
 
@@ -75,15 +75,15 @@ export class MongoDB {
         try {
             dbData = await collection.replaceOne(dbquery, data)
         } catch (e: any) {
-            if (e.code == 11000) throw "Duplicated key"
+            if (e.code == 11000) throw new Error("Duplicated key")
         }
-        if (!dbData.matchedCount) throw "Not found"
+        if (!dbData.matchedCount) throw new Error("Not found")
         return data
     }
 
     async delete(collectionName: string, dbquery: any): Promise<any> { // Delete just adds "_delete" field to true, and read/list operations ommit these items
-        const element = await this.read(collectionName, dbquery )
-        return await this.update(collectionName, dbquery, {...element, _delete: true})
+        const element = await this.read(collectionName, dbquery)
+        return await this.update(collectionName, dbquery, { ...element, _delete: true })
     }
 
     async generateIndex(collectionName: string, field: string, indexType: 'unique' | 'text'): Promise<void> { // recover one element deleted

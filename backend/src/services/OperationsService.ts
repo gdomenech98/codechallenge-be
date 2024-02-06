@@ -35,9 +35,9 @@ export class OperationsService {
         try {
           const transactionData = await TransactionRepository.list(dailyTransactionsQuery);
           dayAccountDeposits = TransactionCollection.load(transactionData).totalAmount();
-        } catch (error) {
+        } catch (error: any) {
           dayAccountDeposits = 0
-          if (error !== 'Not found') {
+          if (error.message !== 'Not found') {
             throw new Error("Something wrong happened when trying to fetch transaction list.")
           }
         }
