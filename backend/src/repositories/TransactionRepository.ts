@@ -5,7 +5,7 @@ const NAME: string = 'transactions';
 export class TransactionRepository {
     private static async connect() {
         const db = await MongoDB.connect();
-        if (!db) throw 'Could not connect to database'
+        if (!db) throw new Error('Could not connect to database')
         return db;
     }
     static async list(dbquery: any, showDeleted: boolean = false): Promise<TransactionType[]> {
