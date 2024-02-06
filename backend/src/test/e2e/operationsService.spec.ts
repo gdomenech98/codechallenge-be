@@ -28,7 +28,7 @@ describe("test Account and Transaction repositories", () => {
         // Transaction 2 from 1 to 2
         transaction2_f1_t2 = Transaction.create('DEPOSIT', 700, accountId1, accountId2, transactionId2)
         // Transaction 3 from 1 to 2 (more than 24h)
-        transaction3_f1_t2_outdated = Transaction.create('DEPOSIT', 500, accountId1, accountId2, transactionId3, (new Date().getTime() - (25 * 60 * 60 * 1000))  )
+        transaction3_f1_t2_outdated = Transaction.create('DEPOSIT', 500, accountId1, accountId2, transactionId3, (new Date().getTime() - (25 * 60 * 60 * 1000)))
         // Save transactions to db
         await TransactionRepository.create(transaction1_f1_t2.getData())
         await TransactionRepository.create(transaction2_f1_t2.getData())
@@ -59,7 +59,7 @@ describe("test Account and Transaction repositories", () => {
 
     describe.only('test operation service', () => {
         it("should be able to perform DEPOSIT operation", async () => {
-            const { transaction: transactionData, account: accountData} = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('DEPOSIT', 500, accountId1) as { transaction: TransactionType, account: AccountType }
             const transaction = Transaction.load(transactionData)
             const account = Account.load(accountData)
             expect(transaction.getAmount()).toBe(500)
@@ -67,5 +67,24 @@ describe("test Account and Transaction repositories", () => {
             expect(account.getBalance()).toBe(500)
             expect(account.getId()).toBe(accountId1)
         })
+        it("should be able to perform WITHDRAW operation", async () => {
+            const { transaction: transactionData, account: accountData } = await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+            const transaction = Transaction.load(transactionData)
+            const account = Account.load(accountData)
+            expect(transaction.getAmount()).toBe(500)
+            expect(transaction.getFromAccount()).toBe(accountId1)
+            expect(account.getBalance()).toBe(0)
+            expect(account.getId()).toBe(accountId1)
+            const { account: accountData_overdrawed } = await OperationsService.createOperation('WITHDRAW', 100, accountId1) as { transaction: TransactionType, account: AccountType }
+            const account_overdrawed = Account.load(accountData_overdrawed)
+            expect(account_overdrawed.getBalance()).toBe(-100)
+            try {
+                await OperationsService.createOperation('WITHDRAW', 500, accountId1) as { transaction: TransactionType, account: AccountType }
+                expect('Operation error max overdraw exceeded').toBeFalsy() // Make sure test crash
+            } catch (e) {
+                expect(e).toBeTruthy()
+            }
+        })
     })
+
 })
