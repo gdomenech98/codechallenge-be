@@ -113,9 +113,8 @@ export class TransactionCollection { // WIP
     }
 
     totalAmount(): number {
-        return this.getItems().reduce((total: number, item: Transaction) => {
-            const newTotal = total + item.getAmount()
-            return newTotal
-        }, 0)
+        return this.getItems().reduce((total: number, item: Transaction) => (
+            total + item.getAmount()
+        ), 0)
     }
 }

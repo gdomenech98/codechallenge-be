@@ -134,8 +134,8 @@ describe('Unit Testing methods for Account Model', () => {
                 try {
                     account.transfer(101);
                     expect('Error: should crash, could not transfer specified amoun, overdraft exceeded').toBeFalsy() // Intentionally crash test
-                } catch (e) {
-                    expect(e).toBe("Can not overdraw in transfer")
+                } catch (e: any) {
+                    expect(e.message).toBe("Can not overdraw in transfer")
                 }
             })
         })

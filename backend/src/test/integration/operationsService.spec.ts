@@ -159,8 +159,8 @@ describe("test Account and Transaction repositories", () => {
                     expect(Account.load(account3Data).getBalance()).toBe(0) // Check balance is 0
                     await OperationsService.createOperation('TRANSFER', 300, accountId3 as string, accountId4)
                     expect("Error: can't transfer exceeding outdraw").toBeFalsy()
-                } catch (error) {
-                    expect(error).toBe('Can not overdraw in transfer')
+                } catch (error: any) {
+                    expect(error.message).toBe('Can not overdraw in transfer')
                 }
             })
         
