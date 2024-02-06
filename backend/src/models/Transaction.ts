@@ -18,17 +18,17 @@ export class Transaction {
     }
 
     static validate(data: TransactionType): boolean {
-        if (data.amount === undefined) throw "Transaction should have an amount"
-        if (data.amount <= 0) throw "Transaction should have a possitive amount"
+        if (!data.amount || data.amount <= 0) throw "Transaction should have a possitive amount"
         if (data.fromAccountId === undefined) throw "Transaction should have an fromAccountId"
         if (data.operation === undefined) throw "Transaction must specify an operation"
         if (!["WITHDRAW", "TRANSFER", "DEPOSIT"].includes(data.operation)) throw "Invalid operation for transaction"
         if (data.operation === "TRANSFER" && data.toAccountId === undefined) throw "Transaction of type TRANSFER must specify a destination account"
+        if (data.fromAccountId === data.toAccountId) throw "Transaction couldn't have same source and destinatary account"
         return true
     }
 
     static load(data: TransactionType): Transaction {
-        if(!Transaction.validate(data)) throw "No valid data for Transaction"
+        if (!Transaction.validate(data)) throw "No valid data for Transaction"
         return new Transaction(data)
     }
 
@@ -81,11 +81,11 @@ export class Transaction {
             operation: operation,
             amount,
             fromAccountId,
+            toAccountId,
             timestamp: timestamp ?? Date.now()
         }
-        if (operation === "TRANSFER") {
-            if (!toAccountId) throw `The destinatary should be specified when performing transaction of type "${operation}"`
-            newTransactionData = { ...newTransactionData, toAccountId }
+        if (!newTransactionData.toAccountId) {
+            delete newTransactionData.toAccountId
         }
         return Transaction.load(newTransactionData)
     }

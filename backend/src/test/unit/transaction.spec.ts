@@ -72,13 +72,11 @@ describe('Unit Testing methods for Transaction Model', () => {
                     operation: "WITHDRAW",
                     amount: 200,
                     fromAccountId: "1234",
-                    toAccountId: "4321",
                     timestamp: Date.now()
                 }
-                const transaction_withdraw = Transaction.create(initialData.operation, initialData.amount, initialData.fromAccountId, initialData.fromAccountId, initialData.id)
+                const transaction_withdraw = Transaction.create(initialData.operation, initialData.amount, initialData.fromAccountId, undefined, initialData.id)
                 const transaction_withdrawData = transaction_withdraw.getData()
-                const {toAccountId, ...expectedTransactionData}  = transaction_withdrawData
-                expect(transaction_withdrawData).toStrictEqual(expectedTransactionData)
+                expect(transaction_withdrawData).toStrictEqual(transaction_withdrawData)
             })
             it("creates transaction with toAccountId and operation different to 'TRANSFER'", () => {
                 const initialData: TransactionType = {
@@ -88,7 +86,7 @@ describe('Unit Testing methods for Transaction Model', () => {
                     fromAccountId: "1234",
                     timestamp: Date.now()
                 }
-                const transaction_withdraw = Transaction.create(initialData.operation, initialData.amount, initialData.fromAccountId, initialData.fromAccountId, initialData.id)
+                const transaction_withdraw = Transaction.create(initialData.operation, initialData.amount, initialData.fromAccountId, undefined, initialData.id)
                 expect(transaction_withdraw.getData()).toStrictEqual(initialData)
             })
         })
