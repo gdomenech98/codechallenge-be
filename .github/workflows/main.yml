@@ -25,7 +25,7 @@ jobs:
         docker-compose -v
 
     - name: Start dev
-      run: node .github/workflows/start.js
+      run: node .github/scripts/start.js
 
     - name: Run tests
       run: ./test
