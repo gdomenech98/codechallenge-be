@@ -14,7 +14,7 @@ describe('Unit Testing methods for Transaction Model', () => {
         }
         const transactionData_1: TransactionType = {
             id: '1',
-            operation: "WITHDRAW",
+            operation: "TRANSFER",
             amount: 100,
             timestamp: current_ts,
             fromAccountId: "1234",

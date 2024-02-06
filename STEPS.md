@@ -43,7 +43,8 @@ npm i ts-node-dev --save-dev
 11. Create endpoints (deposit/transfer/withdraw) at App.ts. Add prefix `/api/v1`
 12. Add body parser middleware to express app to handle JSON encoded body
 13. Test endpoints `infraRouting.specs.ts`
-14. EXTRA: Add CI/CD that runns tests in GithubActions!
+14. **MY EXTRA MILE!**: Add CI/CD that runns tests in GithubActions!
+(on each step i've refactored some of the code when emerged new implementations or discover the real usability of functions)
 
 
 # Considerations:
@@ -54,9 +55,9 @@ npm i ts-node-dev --save-dev
 - Not created a CRUD API to create accounts, can do it through running tests, or with mongo GUI available at `http:localhost:8081/db/db/accounts`. User and password for mongodb GUI are
 `user:changeme` located over `ME_CONFIG_BASICAUTH_USERNAME` and `ME_CONFIG_BASICAUTH_PASSWORD` respectively, configured at docker-compose.dev.yml
 
-# Todo:
+# Possible improvements:
 - Fix warning `A worker process has failed to exit gracefully...`` at test `should be able to perform TRANSFER operation` in `operationsService.spec.ts`
-- Refactor operations Service spec to do isolated testing on each "it"
-- Could improve production environments to optimize container sizes/resources
+- Could improve production environments to optimize docker container sizes/resources
 - dev and prod share ports, could change it to have different ports in prod and dev.
 - Add regex to jest config to avoid jest from executing tests at /dist
+- Operations in accounts/transacitons should be atomic, and reverse if any of the operation steps fails.
