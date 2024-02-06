@@ -61,4 +61,3 @@ npm i ts-node-dev --save-dev
 - dev and prod share ports, could change it to have different ports in prod and dev.
 - Add regex to jest config to avoid jest from executing tests at /dist
 - Operations in accounts/transacitons should be atomic, and reverse if any of the operation steps fails.
-- Errors thrown as string, could be improved by using Error object instance
