@@ -68,4 +68,15 @@ export class Account {
         const updatedBalance: number = this.getBalance() + amount;
         return this.set('balance', updatedBalance)
     }
+
+    transfer(amount: number): Account { // TOTEST
+        if(this.getBalance() - amount < 0) throw 'Can not overdraw in transfer'
+        const updatedBalance: number = this.getBalance() - amount;
+        return this.set('balance', updatedBalance)
+    }
+
+    recieveTransfer(amount: number): Account { // TOTEST
+        const updatedBalance: number = this.getBalance() + amount;
+        return this.set('balance', updatedBalance)
+    }
 }

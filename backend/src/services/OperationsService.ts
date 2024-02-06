@@ -9,15 +9,17 @@ export class OperationsService {
   static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<{ transaction: TransactionType, account: AccountType } | undefined> {
     // find account where operation is performed
     const accountData = await AccountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
+    let destinataryAccountData: AccountType;
     if (!accountData) throw "Can't perform operation, account doesn't exist" // This if is for healthchecking
     let account = Account.load(accountData);
-    const accountID = account.getId();
+    let destinataryAccount: Account;
+
     switch (operation) {
       case 'DEPOSIT':
         // find last 'DEPOSIT' transactions of the last 24h
         const ts_24h_ago = new Date().getTime() - (24 * 60 * 60 * 1000);
         const dailyTransactionsQuery = {
-          fromAccountId: accountID,
+          fromAccountId,
           operation,
           timestamp: {
             $gt: ts_24h_ago
@@ -34,23 +36,46 @@ export class OperationsService {
             throw "Something wrong happened when trying to fetch transaction list."
           }
         }
-        // Update account
         account = account.deposit(amount, dayAccountDeposits)
         break;
       case 'WITHDRAW':
         account = account.withdraw(amount); // throw error if can't withdraw (considering overdraft)
         break
+      case 'TRANSFER': // TOTEST
+        if (!toAccoundId) throw "Error: can't perform transfer, destinatary is not specified"
+        try {
+          destinataryAccountData = await AccountRepository.read({ accountId: toAccoundId })
+        } catch (e) {
+          throw "Error: can't perform transfer, desinatary account doesn't exist."
+        }
+        // Once healthchecked the destinatary perform transfer
+        destinataryAccount = Account.load(destinataryAccountData);
+        account = account.transfer(amount); // it throws error if overdraft
+        destinataryAccount = destinataryAccount.recieveTransfer(amount);
+        // update destinatary account 
+        try {
+          await AccountRepository.update({ accountId: toAccoundId }, destinataryAccount.getData())
+        } catch (e) {
+          throw "Error updating account. Error: " + e
+        }
+        break
     }
 
-    // Update accounts
+    // Update from account 
     try {
       await AccountRepository.update({ accountId: fromAccountId }, account.getData())
     } catch (e) {
       throw "Error updating account. Error: " + e
     }
+
     // Create new transaction 
     try {
-      const performedTransactionData = Transaction.create(operation, amount, accountID).getData()
+      let performedTransactionData;
+      if(operation === 'TRANSFER') {
+        performedTransactionData = Transaction.create(operation, amount, fromAccountId, toAccoundId).getData()
+      }else {
+        performedTransactionData = Transaction.create(operation, amount, fromAccountId).getData()
+      }
       await TransactionRepository.create(performedTransactionData)
       return { account: account.getData(), transaction: performedTransactionData }
     } catch (e) {
