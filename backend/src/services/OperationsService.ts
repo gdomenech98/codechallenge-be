@@ -12,7 +12,6 @@ export class OperationsService {
     if (!accountData) throw "Can't perform operation, account doesn't exist" // This if is for healthchecking
     let account = Account.load(accountData);
     const accountID = account.getId();
-    
     switch (operation) {
       case 'DEPOSIT':
         // find last 'DEPOSIT' transactions of the last 24h
@@ -37,35 +36,25 @@ export class OperationsService {
         }
         // Update account
         account = account.deposit(amount, dayAccountDeposits)
-        try {
-          await AccountRepository.update({ accountId: fromAccountId }, account.getData())
-        } catch (e) {
-          throw "Error updating account. Error: " + e
-        }
-        // Create new transaction 
-        try {
-          const performedTransactionData = Transaction.create(operation, amount, accountID).getData()
-          await TransactionRepository.create(performedTransactionData)
-          return { account: account.getData(), transaction: performedTransactionData }
-        } catch (e) {
-          throw "Error adding new transaction. Error: " + e
-        }
-
+        break;
       case 'WITHDRAW':
         account = account.withdraw(amount); // throw error if can't withdraw (considering overdraft)
-        try {
-          await AccountRepository.update({ accountId: fromAccountId }, account.getData())
-        } catch (e) {
-          throw "Error updating account. Error: " + e
-        }
-        // Create new transaction 
-        try {
-          const performedTransactionData = Transaction.create(operation, amount, accountID).getData()
-          await TransactionRepository.create(performedTransactionData)
-          return { account: account.getData(), transaction: performedTransactionData }
-        } catch (e) {
-          throw "Error adding new transaction. Error: " + e
-        }
+        break
+    }
+
+    // Update accounts
+    try {
+      await AccountRepository.update({ accountId: fromAccountId }, account.getData())
+    } catch (e) {
+      throw "Error updating account. Error: " + e
+    }
+    // Create new transaction 
+    try {
+      const performedTransactionData = Transaction.create(operation, amount, accountID).getData()
+      await TransactionRepository.create(performedTransactionData)
+      return { account: account.getData(), transaction: performedTransactionData }
+    } catch (e) {
+      throw "Error adding new transaction. Error: " + e
     }
   }
 }
