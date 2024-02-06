@@ -99,7 +99,7 @@ export class TransactionCollection { // WIP
         return this.getItems().length;
     }
 
-    totalAmount(): number{ // TOTEST
+    totalAmount(): number{
         return this.getItems().reduce((total:number, item: Transaction) => {
             const newTotal = total + item.getAmount()
             return newTotal
