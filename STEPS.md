@@ -1,3 +1,15 @@
+# Run system
+1. First check that have installed docker and docker-compose. Tested environment specifications:
+```
+OS: [ Unix MacOS (Ventura), Ubuntu-22.04LTS]
+NodeJS: [v20.4.0, v20.5.0]
+Docker: Docker version 24.0.5, build ced0996
+Docker-compose: Docker Compose version v2.20.2-desktop.1
+```
+2. ONLY FOR DEVELOPMENT PURPOSES. development mode with hotreload `./start`
+3. FOR PRODUCTION: `./prod`
+
+# Steps/decisions made 
 1. npm install
 2. Check app by default is working:
 `
@@ -33,11 +45,15 @@ npm i ts-node-dev --save-dev
 
 
 
-
-Considerations:
+# Considerations:
 - Deposits can not be above $5000 per day --> I consider a day 24h from the moment action is performed, not natural days.
 - Now actions over accounts (withdraw, transfer, deposit) can be performed by anyone that knows account id, should add (in the future) any type of validation over, for example, JWT tokens.
+- Account and Transaction are 2 separated entities to have more flexibility to extend behaviour
+- Account have ownerId, but there is no User/Profile model, assuming its already created
+- Not created a CRUD API to create accounts, can do it through running tests, or with mongo GUI available at `http:localhost:8081/db/db/accounts`. User and password for mongodb GUI are
+`user:changeme` located over `ME_CONFIG_BASICAUTH_USERNAME` and `ME_CONFIG_BASICAUTH_PASSWORD` respectively, configured at docker-compose.dev.yml
 
-Todo:
+# Todo:
+- Fix warning `A worker process has failed to exit gracefully...`` at test `should be able to perform TRANSFER operation` in `operationsService.spec.ts`
 - Refactor operations Service spec to do isolated testing on each "it"
 - Add prod mode, that build and runs the compiled JS code

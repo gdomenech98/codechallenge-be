@@ -20,7 +20,6 @@ export class App {
 
     start(): void {
         this.express.post('/api/v1/deposit', async (request: Request, response: Response) => {
-            console.log(request.body)
             const { accountId, amount } = request.body as { accountId: string, amount: number };
             if (!accountId) response.send('Error account is not specified').status(400)
             if (!amount) response.send('Error deposits must have positive amount').status(400)
