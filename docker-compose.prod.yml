@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  backend:
+    restart: always
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    working_dir: "/backend"
+    entrypoint: "/bin/bash"
+    command: -c "npm run build && npm run start"
+    volumes:
+      - ./backend:/backend
+    ports:
+      - 3300:3300
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - ./database:/data/db
+
+  mongo-express:
+    container_name: mongodb-gui
+    image: mongo-express:latest
+    restart: unless-stopped
+    depends_on: 
+      - mongodb 
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_BASICAUTH_USERNAME=user
+      - ME_CONFIG_BASICAUTH_PASSWORD=changeme
