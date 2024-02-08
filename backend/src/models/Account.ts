@@ -14,16 +14,16 @@ export class Account {
     private readonly MAX_DEPOSIT_PER_DAY: number = 5000;
 
     constructor(data: AccountType) {
+        this.validate(data)
         this.data = data;
     }
 
-    static validate(data: AccountType): void {
+    validate(data: AccountType): void {
         if (!data.accountId) throw new Error("Account should have an accountId")
         if (!data.ownerId) throw new Error("Account should have an ownerId")
     }
 
     static load(data: AccountType): Account {
-        Account.validate(data)
         return new Account(data)
     }
 

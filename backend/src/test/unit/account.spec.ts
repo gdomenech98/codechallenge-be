@@ -17,7 +17,7 @@ describe('Unit Testing methods for Account Model', () => {
                     balance: 100
                 }
                 try {
-                    Account.validate(accountData)
+                    new Account(accountData)
                     expect('Validate healthcheck').toBeTruthy()
                 } catch (e) {
                     expect(e).toBeFalsy()
@@ -29,7 +29,7 @@ describe('Unit Testing methods for Account Model', () => {
                     balance: 100
                 }
                 try {
-                    Account.validate(accountData as AccountType)
+                    new Account(accountData as AccountType)
                     expect("Error. missing accountId").toBeFalsy() // Intentionally crash
                 } catch (e: any) {
                     expect(e.message).toBe("Account should have an accountId")
@@ -41,7 +41,7 @@ describe('Unit Testing methods for Account Model', () => {
                     balance: 100
                 }
                 try {
-                    Account.validate(accountData as AccountType)
+                    new Account(accountData as AccountType)
                     expect("Error. missing ownerId").toBeFalsy() // Intentionally crash
                 } catch (e:any) {
                     expect(e.message).toBe("Account should have an ownerId")
