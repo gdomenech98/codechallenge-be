@@ -16,7 +16,7 @@ export class OperationsService {
     const accountData = await AccountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
     if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
-    let account = Account.load(accountData);
+    let account = new Account(accountData);
     let destinataryAccount: Account | undefined;
 
     switch (operation) {
@@ -54,7 +54,7 @@ export class OperationsService {
           throw new Error("Error: can't perform transfer, desinatary account doesn't exist.")
         }
         // Once healthchecked the destinatary perform transfer
-        destinataryAccount = Account.load(destinataryAccountData);
+        destinataryAccount = new Account(destinataryAccountData);
         account = account.transfer(amount); // it throws error if overdraft
         destinataryAccount = destinataryAccount.recieveTransfer(amount);
         // update destinatary account 

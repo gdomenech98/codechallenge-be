@@ -19,17 +19,13 @@ export class Transaction {
         this.data = data;
     }
 
-    validate(data: TransactionType): void {
+    private validate(data: TransactionType): void {
         if (!data.amount || data.amount <= 0) throw new Error("Transaction should have a possitive amount")
         if (data.fromAccountId === undefined) throw new Error("Transaction should have an fromAccountId")
         if (data.operation === undefined) throw new Error("Transaction must specify an operation")
         if (!["WITHDRAW", "TRANSFER", "DEPOSIT"].includes(data.operation)) throw new Error("Invalid operation for transaction")
         if (data.operation === "TRANSFER" && data.toAccountId === undefined) throw new Error("Transaction of type TRANSFER must specify a destination account")
         if (data.fromAccountId === data.toAccountId) throw new Error("Transaction couldn't have same source and destinatary account")
-    }
-
-    static load(data: TransactionType): Transaction {
-        return new Transaction(data)
     }
 
     getData(): TransactionType {
@@ -66,7 +62,7 @@ export class Transaction {
 
     set<T extends keyof TransactionType>(key: T, value: TransactionType[T]): Transaction {
         const prevData = this.getData()
-        return Transaction.load({ ...prevData, [key]: value })
+        return new Transaction({ ...prevData, [key]: value })
     }
 
     static create(
@@ -88,7 +84,7 @@ export class Transaction {
         if (!newTransactionData.toAccountId) {
             delete newTransactionData.toAccountId
         }
-        return Transaction.load(newTransactionData)
+        return new Transaction(newTransactionData)
     }
 }
 
@@ -100,7 +96,7 @@ export class TransactionCollection { // WIP
     }
 
     static load(data: TransactionType[]): TransactionCollection {
-        const items = data.map((item: TransactionType) => Transaction.load(item))
+        const items = data.map((item: TransactionType) => new Transaction(item))
         return new TransactionCollection(items)
     }
 

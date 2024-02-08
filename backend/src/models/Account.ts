@@ -18,13 +18,9 @@ export class Account {
         this.data = data;
     }
 
-    validate(data: AccountType): void {
+    private validate(data: AccountType): void {
         if (!data.accountId) throw new Error("Account should have an accountId")
         if (!data.ownerId) throw new Error("Account should have an ownerId")
-    }
-
-    static load(data: AccountType): Account {
-        return new Account(data)
     }
 
     getData(): AccountType {
@@ -49,7 +45,7 @@ export class Account {
 
     set<T extends keyof AccountType>(key: T, value: AccountType[T]): Account {
         const prevData = this.getData()
-        return Account.load({ ...prevData, [key]: value })
+        return new Account({ ...prevData, [key]: value })
     }
 
     static create(ownerId: string, accountId?: string): Account {
@@ -58,7 +54,7 @@ export class Account {
             ownerId,
             balance: 0 // assuming that when created the balance is 0
         }
-        return Account.load(newAccountData)
+        return new Account(newAccountData)
     }
 
     withdraw(amount: number): Account {

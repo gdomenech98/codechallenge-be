@@ -35,7 +35,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 300
             });
-            expect(Account.load((response as OperationType).account).getBalance()).toBe(300)
+            expect(new Account((response as OperationType).account).getBalance()).toBe(300)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -61,7 +61,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 180
             });
-            expect(Account.load((response as OperationType).account).getBalance()).toBe(20)
+            expect(new Account((response as OperationType).account).getBalance()).toBe(20)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -73,7 +73,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 180
             });
-            expect(Account.load((response as OperationType).account).getBalance()).toBe(-180)
+            expect(new Account((response as OperationType).account).getBalance()).toBe(-180)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -100,8 +100,8 @@ describe("test endpoints", () => {
                 toAccountId: accountId2,
                 amount: 50
             });
-            expect(Account.load((response as OperationType).account).getBalance()).toBe(50)
-            expect(Account.load((response as OperationType).destinataryAccount as AccountType).getBalance()).toBe(50)
+            expect(new Account((response as OperationType).account).getBalance()).toBe(50)
+            expect(new Account((response as OperationType).destinataryAccount as AccountType).getBalance()).toBe(50)
 
         } catch (e) {
             expect(e).toBeFalsy()

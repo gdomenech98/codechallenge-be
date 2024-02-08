@@ -8,7 +8,7 @@ describe('Unit Testing methods for Account Model', () => {
             ownerId: "4321",
             balance: 100
         }
-        const account = Account.load(accountData);
+        const account = new Account(accountData);
         describe("validation data for Account", () => {
             it("should validate data", () => {
                 const accountData: AccountType = {
@@ -77,7 +77,7 @@ describe('Unit Testing methods for Account Model', () => {
                 ownerId: "4321",
                 balance: 22
             }
-            const account_1 = Account.load(accountData_1)
+            const account_1 = new Account(accountData_1)
             const modifiedAccountData_1 = account_1.set('balance', 22).getData()
             expect(modifiedAccountData_1).toStrictEqual(expectedAccountData)
         })

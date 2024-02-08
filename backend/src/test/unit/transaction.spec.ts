@@ -21,8 +21,8 @@ describe('Unit Testing methods for Transaction Model', () => {
             toAccountId: "4321",
         }
 
-        const transaction = Transaction.load(transactionData);
-        const transaction_1 = Transaction.load(transactionData_1);
+        const transaction = new Transaction(transactionData);
+        const transaction_1 = new Transaction(transactionData_1);
 
         describe("should validate data to generate Transaction", () => {
             it('should validate transaction data', () => {
@@ -226,8 +226,8 @@ describe('Unit Testing methods for TransactionCollection', () => {
         expect(transactionCollection.length()).toBe(2)
     })
     it("should retrieve items from transaction collection", () => {
-        expect(transactionCollection.getItems()[0]).toStrictEqual(Transaction.load(transactionData_1))
-        expect(transactionCollection.getItems()[1]).toStrictEqual(Transaction.load(transactionData_2))
+        expect(transactionCollection.getItems()[0]).toStrictEqual(new Transaction(transactionData_1))
+        expect(transactionCollection.getItems()[1]).toStrictEqual(new Transaction(transactionData_2))
     })
     it("should retrieve total amount from transaction collection", () => {
         expect(transactionCollection.totalAmount()).toBe(200)
