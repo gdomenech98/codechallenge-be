@@ -1,4 +1,3 @@
-import { MongoDB } from "../connectors/db";
 import { AccountType } from "../models/Account";
 
 const NAME: string = 'accounts';

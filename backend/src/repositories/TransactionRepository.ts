@@ -1,4 +1,3 @@
-import { MongoDB } from "../connectors/db";
 import { TransactionType } from "../models/Transaction";
 
 const NAME: string = 'transactions';
