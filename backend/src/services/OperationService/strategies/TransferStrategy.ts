@@ -1,4 +1,3 @@
-import { MongoDB } from "../../../connectors/db";
 import { Account, AccountType } from "../../../models/Account";
 import { Transaction } from "../../../models/Transaction";
 import { AccountRepository } from "../../../repositories/AccountRepository";
@@ -13,9 +12,8 @@ export class TransferStrategy implements OperationStrategy {
     async execute({ fromAccountId, toAccountId, amount }: OperationDetails): Promise<OperationResponse> {
         const accountRepository = new AccountRepository(this.db)
         const transactionRepository = new TransactionRepository(this.db)
-        const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
+        const accountData = await accountRepository.read({ accountId: fromAccountId }); 
         let destinataryAccountData: AccountType;
-        if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
         let account = new Account(accountData);
         let destinataryAccount: Account | undefined;
         if (!fromAccountId) throw new Error("Error: can't perform transfer, destinatary is not specified")
@@ -29,28 +27,16 @@ export class TransferStrategy implements OperationStrategy {
         account = account.transfer(amount); // it throws error if overdraft
         destinataryAccount = destinataryAccount.recieveTransfer(amount);
         // update destinatary account 
-        try {
-            await accountRepository.update({ accountId: toAccountId }, destinataryAccount.getData())
-        } catch (e: any) {
-            throw new Error("Error updating account. Error: " + e.message)
-        }
-        // Update from account 
-        try {
-            await accountRepository.update({ accountId: fromAccountId }, account.getData())
-        } catch (e: any) {
-            throw new Error("Error updating account. Error: " + e.message)
-        }
+        await accountRepository.update({ accountId: toAccountId }, destinataryAccount.getData())
+        // update from account 
+        await accountRepository.update({ accountId: fromAccountId }, account.getData())
         // Create new transaction 
-        try {
-            let performedTransactionData = Transaction.create('TRANSFER', amount, fromAccountId, toAccountId).getData()
-            await transactionRepository.create(performedTransactionData)
-            return {
-                account: account.getData(),
-                transaction: performedTransactionData,
-                destinataryAccount: (destinataryAccount as Account).getData()
-            }
-        } catch (e: any) {
-            throw new Error("Error adding new transaction. Error: " + e.message)
+        let performedTransactionData = Transaction.create('TRANSFER', amount, fromAccountId, toAccountId).getData()
+        await transactionRepository.create(performedTransactionData)
+        return {
+            account: account.getData(),
+            transaction: performedTransactionData,
+            destinataryAccount: (destinataryAccount as Account).getData()
         }
     }
 }

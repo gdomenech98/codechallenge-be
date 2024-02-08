@@ -13,8 +13,7 @@ export class DepositStrategy implements OperationStrategy {
     async execute({ fromAccountId, amount }: OperationDetails): Promise<OperationResponse> {
         const accountRepository = new AccountRepository(this.db)
         const transactionRepository = new TransactionRepository(this.db)
-        const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
-        if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
+        const accountData = await accountRepository.read({ accountId: fromAccountId });
         let account = new Account(accountData);
         // find last 'DEPOSIT' transactions of the last 24h
         const ts_24h_ago = new Date().getTime() - (24 * 60 * 60 * 1000);
@@ -28,27 +27,18 @@ export class DepositStrategy implements OperationStrategy {
 
         let dayAccountDeposits: number = 0;
         try {
-            const transactionData = await transactionRepository.list(dailyTransactionsQuery);
-            dayAccountDeposits = new TransactionCollection(transactionData).totalAmount();
-        } catch (error: any) {
-            if (error.message !== 'Not found') {
-                throw new Error("Something wrong happened when trying to fetch transaction list.")
-            }
+            const transactionsDataList = await transactionRepository.list(dailyTransactionsQuery);
+            dayAccountDeposits = new TransactionCollection(transactionsDataList).totalAmount();
+        } catch (e) {
+            console.warn('No found deposits in the las 24h ')
         }
+
         account = account.deposit(amount, dayAccountDeposits)
         // Update from account 
-        try {
-            await accountRepository.update({ accountId: fromAccountId }, account.getData())
-        } catch (e: any) {
-            throw new Error("Error updating account. Error: " + e.message)
-        }
+        await accountRepository.update({ accountId: fromAccountId }, account.getData())
         // Create new transaction 
-        try {
-            let transactionData = Transaction.create('DEPOSIT', amount, fromAccountId).getData()
-            await transactionRepository.create(transactionData)
-            return { account: account.getData(), transaction: transactionData }
-        } catch (e: any) {
-            throw new Error("Error adding new transaction. Error: " + e.message)
-        }
+        let transactionData = Transaction.create('DEPOSIT', amount, fromAccountId).getData()
+        await transactionRepository.create(transactionData)
+        return { account: account.getData(), transaction: transactionData }
     }
 }
