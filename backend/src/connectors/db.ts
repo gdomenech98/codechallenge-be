@@ -8,18 +8,10 @@ export class MongoDB {
         this.client = client;
     }
 
-    static async _newInstance(uri = DB_URL): Promise<MongoDB> {
+    static async connect(uri: string = DB_URL): Promise<MongoDB> { // Factory
         try {
             const client: MongoClient = await new MongoClient(uri).connect()
             return new this(client);
-        } catch (e: any) {
-            throw new Error("Could not connect client")
-        }
-    }
-
-    static async connect(uri?: string): Promise<MongoDB> {
-        try {
-            return MongoDB._newInstance(uri)
         } catch (e: any) {
             console.error("Failed to connect to: ", uri)
             throw new Error(e)
