@@ -4,6 +4,7 @@ import { Transaction } from '../../models/Transaction';
 import { Account, AccountType } from '../../models/Account';
 import { TransactionRepository } from '../../repositories/TransactionRepository';
 import { AccountRepository } from '../../repositories/AccountRepository';
+import { MongoDB } from '../../connectors/db';
 
 describe("test Account and Transaction repositories", () => {
     const ownerId1 = uuidv4()
@@ -20,10 +21,12 @@ describe("test Account and Transaction repositories", () => {
     let transaction3_f1_t2_outdated: undefined | Transaction
     let accountRepository: AccountRepository;
     let transactionRepository: TransactionRepository;
+    let db: MongoDB
     beforeAll(async () => {
         // Save accounts to db
+        db = await MongoDB.connect()
+        transactionRepository = new TransactionRepository(db)
         accountRepository = await AccountRepository.create();
-        transactionRepository = await TransactionRepository.create();
         await accountRepository.create(account1.getData());
         await accountRepository.create(account2.getData());
         // Transaction 1 from 1 to 2
@@ -39,7 +42,7 @@ describe("test Account and Transaction repositories", () => {
     })
     afterAll(async () => {
         await accountRepository.close()
-        await transactionRepository.close()
+        await db.close()
     })
     it('should retrieve all created accounts (in this test)', async () => {
         const accounts = await accountRepository.list({

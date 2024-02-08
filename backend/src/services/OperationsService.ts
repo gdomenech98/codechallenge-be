@@ -1,3 +1,4 @@
+import { MongoDB } from "../connectors/db";
 import { Account, AccountType } from "../models/Account";
 import { TransactionCollection, TransactionType, Transaction } from "../models/Transaction";
 import { AccountRepository } from "../repositories/AccountRepository";
@@ -14,7 +15,8 @@ export class OperationsService {
   static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<OperationType | undefined> {
     // find account where operation is performed
     const accountRepository = await AccountRepository.create()
-    const transactionRepository = await TransactionRepository.create()
+    const db = await MongoDB.connect()
+    const transactionRepository = new TransactionRepository(db)
     const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
     if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking

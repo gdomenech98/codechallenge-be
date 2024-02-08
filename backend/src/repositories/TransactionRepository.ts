@@ -3,37 +3,24 @@ import { TransactionType } from "../models/Transaction";
 
 const NAME: string = 'transactions';
 export class TransactionRepository {
-    private readonly db;
+    private db: any; // for example MongoDB instance
     constructor(db: any) {
         this.db = db
     }
 
-    static async create() {
-        const db = await MongoDB.connect();
-        if (!db) throw new Error('Could not connect to database')
-        return new TransactionRepository(db);
-    }
     async list(dbquery: any, showDeleted: boolean = false): Promise<TransactionType[]> {
-        const result = await this.db.list(NAME, dbquery, showDeleted)
-        return result
+        return await this.db.list(NAME, dbquery, showDeleted)
     }
     async read(dbquery: any, showDeleted: boolean = false): Promise<TransactionType> {
-        const result = await this.db.read(NAME, dbquery, showDeleted)
-        return result
+        return await this.db.read(NAME, dbquery, showDeleted)
     }
     async update(dbquery: any, transactionData: TransactionType): Promise<TransactionType> {
-        const result = await this.db.update(NAME, dbquery, transactionData)
-        return result
+        return await this.db.update(NAME, dbquery, transactionData)
     }
     async create(transactionData: TransactionType): Promise<TransactionType> {
-        const result = await this.db.create(NAME, transactionData)
-        return result
+        return await this.db.create(NAME, transactionData)
     }
     async delete(dbquery: any): Promise<TransactionType> {
-        const result = await this.db.delete(NAME, dbquery)
-        return result
-    }
-    async close(): Promise<void> {
-        await this.db.close()
+        return await this.db.delete(NAME, dbquery)
     }
 }
