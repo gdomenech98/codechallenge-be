@@ -31,7 +31,8 @@ describe("test endpoints", () => {
 
     it("should deposit specific amount to specific account", async () => {
         try {
-            response = await API.post("/deposit", {
+            const api = new API()
+            response = await api.post("/deposit", {
                 accountId: accountId1,
                 amount: 300
             });
@@ -43,7 +44,8 @@ describe("test endpoints", () => {
 
     it("should not be able to deposit specific amount exceed daily deposit amount", async () => {
         try {
-            response = await API.post("/deposit", {
+            const api = new API()
+            response = await api.post("/deposit", {
                 accountId: accountId1,
                 amount: 30000
             });
@@ -56,8 +58,9 @@ describe("test endpoints", () => {
     it("should withdraw specific amount from specific account", async () => {
         try {
             // First deposit
-            await API.post("/deposit", { accountId: accountId1, amount: 200 });
-            response = await API.post("/withdraw", {
+            const api = new API()
+            await api.post("/deposit", { accountId: accountId1, amount: 200 });
+            response = await api.post("/withdraw", {
                 accountId: accountId1,
                 amount: 180
             });
@@ -69,7 +72,8 @@ describe("test endpoints", () => {
 
     it("should withdraw specific and get negative but preserving max overdraft", async () => {
         try {
-            response = await API.post("/withdraw", {
+            const api = new API()
+            response = await api.post("/withdraw", {
                 accountId: accountId1,
                 amount: 180
             });
@@ -81,7 +85,8 @@ describe("test endpoints", () => {
 
     it("should not withdraw specific amount due that exceed max overdraft", async () => {
         try {
-            response = await API.post("/withdraw", {
+            const api = new API()
+            response = await api.post("/withdraw", {
                 accountId: accountId1,
                 amount: -280
             });
@@ -93,9 +98,10 @@ describe("test endpoints", () => {
 
     it("should transfer specific amount from account to another account", async () => {
         // First deposit
-        await API.post("/deposit", { accountId: accountId1, amount: 100 });
+        const api = new API()
+        await api.post("/deposit", { accountId: accountId1, amount: 100 });
         try {
-            response = await API.post("/transfer", {
+            response = await api.post("/transfer", {
                 fromAccountId: accountId1,
                 toAccountId: accountId2,
                 amount: 50
@@ -110,7 +116,8 @@ describe("test endpoints", () => {
 
     it("should not be able to transfer negative amount", async () => {
         try {
-            response = await API.post("/transfer", {
+            const api = new API()
+            response = await api.post("/transfer", {
                 fromAccountId: accountId1,
                 toAccountId: accountId2,
                 amount: -50
@@ -123,7 +130,8 @@ describe("test endpoints", () => {
 
     it("should not be able to transfer from  non existing account", async () => {
         try {
-            response = await API.post("/transfer", {
+            const api = new API()
+            response = await api.post("/transfer", {
                 fromAccountId: 'novalidid',
                 toAccountId: accountId2,
                 amount: 50
@@ -136,7 +144,8 @@ describe("test endpoints", () => {
 
     it("should not be able to transfer to a non existing account", async () => {
         try {
-            response = await API.post("/transfer", {
+            const api = new API()
+            response = await api.post("/transfer", {
                 fromAccountId: accountId1,
                 toAccountId: 'novalidid',
                 amount: 50
@@ -148,9 +157,10 @@ describe("test endpoints", () => {
     })
 
     it("should not be able to transfer  the amount when over pass 'from' account balance", async () => {
-        await API.post("/deposit", { accountId: accountId1, amount: 100 });
+        const api = new API()
+        await api.post("/deposit", { accountId: accountId1, amount: 100 });
         try {
-            response = await API.post("/transfer", {
+            response = await api.post("/transfer", {
                 fromAccountId: accountId1,
                 toAccountId: accountId2,
                 amount: 101

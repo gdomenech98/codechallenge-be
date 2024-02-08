@@ -2,10 +2,12 @@ export const SERVER_URL = process.env.SERVER_URL ?? "http://localhost:3300"
 export const API_PREFIX = '/api/v1'
 
 export class API {
-    constructor() {
+    private readonly server: string;
+    constructor(server?: string) {
+        this.server = server ?? SERVER_URL
     }
-    static async get(path: string, prefix: string = API_PREFIX) {
-        const URL = SERVER_URL + prefix + path
+    async get(path: string, prefix: string = API_PREFIX) {
+        const URL = this.server + prefix + path
         const response = await fetch(URL, {
             method: 'GET',
             headers: {
@@ -23,8 +25,8 @@ export class API {
             throw Error(JSON.stringify(responseObj));
         }
     }
-    static async post(path: string, body: any, prefix: string = API_PREFIX) {
-        const URL = SERVER_URL + prefix + path
+    async post(path: string, body: any, prefix: string = API_PREFIX) {
+        const URL = this.server + prefix + path
         const response = await fetch(URL, {
             method: 'POST',
             headers: {
