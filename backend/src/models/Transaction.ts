@@ -15,10 +15,11 @@ export class Transaction {
     private readonly data: TransactionType;
 
     constructor(data: TransactionType) {
+        this.validate(data)
         this.data = data;
     }
 
-    static validate(data: TransactionType): void {
+    validate(data: TransactionType): void {
         if (!data.amount || data.amount <= 0) throw new Error("Transaction should have a possitive amount")
         if (data.fromAccountId === undefined) throw new Error("Transaction should have an fromAccountId")
         if (data.operation === undefined) throw new Error("Transaction must specify an operation")
@@ -28,7 +29,6 @@ export class Transaction {
     }
 
     static load(data: TransactionType): Transaction {
-        Transaction.validate(data)
         return new Transaction(data)
     }
 
