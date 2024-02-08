@@ -13,7 +13,8 @@ export class OperationsService {
 
   static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<OperationType | undefined> {
     // find account where operation is performed
-    const accountData = await AccountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
+    const accountRepository = await AccountRepository.create()
+    const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
     if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
     let account = new Account(accountData);
@@ -49,7 +50,7 @@ export class OperationsService {
       case 'TRANSFER':
         if (!toAccoundId) throw new Error("Error: can't perform transfer, destinatary is not specified")
         try {
-          destinataryAccountData = await AccountRepository.read({ accountId: toAccoundId })
+          destinataryAccountData = await accountRepository.read({ accountId: toAccoundId })
         } catch (e) {
           throw new Error("Error: can't perform transfer, desinatary account doesn't exist.")
         }
@@ -59,7 +60,7 @@ export class OperationsService {
         destinataryAccount = destinataryAccount.recieveTransfer(amount);
         // update destinatary account 
         try {
-          await AccountRepository.update({ accountId: toAccoundId }, destinataryAccount.getData())
+          await accountRepository.update({ accountId: toAccoundId }, destinataryAccount.getData())
         } catch (e: any) {
           throw new Error("Error updating account. Error: " + e.message)
         }
@@ -70,7 +71,7 @@ export class OperationsService {
 
     // Update from account 
     try {
-      await AccountRepository.update({ accountId: fromAccountId }, account.getData())
+      await accountRepository.update({ accountId: fromAccountId }, account.getData())
     } catch (e: any) {
       throw new Error("Error updating account. Error: " + e.message)
     }

@@ -3,40 +3,38 @@ import { AccountType } from "../models/Account";
 
 const NAME: string = 'accounts';
 export class AccountRepository {
-    private static async connect() {
-        const db = await MongoDB.connect();
-        if (!db) throw new Error('Could not connect to database')
-        return db;
+    private readonly db;
+    constructor(db: any) {
+        this.db = db
     }
 
-    static async list(dbquery: any, showDeleted: boolean = false): Promise<AccountType[]> {
-        const db = await AccountRepository.connect();
-        const result = await db.list(NAME, dbquery, showDeleted)
-        await db.close()
+    static async create() {
+        const db = await MongoDB.connect();
+        if (!db) throw new Error('Could not connect to database')
+        return new AccountRepository(db);
+    }
+
+    async list(dbquery: any, showDeleted: boolean = false): Promise<AccountType[]> {
+        const result = await this.db.list(NAME, dbquery, showDeleted)
         return result
     }
-    static async read(dbquery: any, showDeleted: boolean = false): Promise<AccountType> {
-        const db = await AccountRepository.connect();
-        const result = await db.read(NAME, dbquery, showDeleted)
-        await db.close()
+    async read(dbquery: any, showDeleted: boolean = false): Promise<AccountType> {
+        const result = await this.db.read(NAME, dbquery, showDeleted)
         return result
     }
-    static async update(dbquery: any, accountData: AccountType): Promise<AccountType> {
-        const db = await AccountRepository.connect();
-        const result = await db.update(NAME, dbquery, accountData)
-        await db.close()
+    async update(dbquery: any, accountData: AccountType): Promise<AccountType> {
+        const result = await this.db.update(NAME, dbquery, accountData)
         return result
     }
-    static async create(accountData: AccountType): Promise<AccountType> {
-        const db = await AccountRepository.connect();
-        const result = await db.create(NAME, accountData)
-        await db.close()
+    async create(accountData: AccountType): Promise<AccountType> {
+        const result = await this.db.create(NAME, accountData)
         return result
     }
-    static async delete(dbquery: any): Promise<AccountType> {
-        const db = await AccountRepository.connect();
-        const result = await db.delete(NAME, dbquery)
-        await db.close()
+    async delete(dbquery: any): Promise<AccountType> {
+        const result = await this.db.delete(NAME, dbquery)
         return result
+    }
+    async close(): Promise<void> {
+        await this.db.close()
     }
 }

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Account, AccountType } from '../../models/Account';
 import { AccountRepository } from '../../repositories/AccountRepository';
 import { OperationType } from '../../services/OperationsService';
-import {API} from '../../connectors/API';
+import { API } from '../../connectors/API';
 
 
 describe("test endpoints", () => {
@@ -13,6 +13,15 @@ describe("test endpoints", () => {
     let account1: Account | undefined
     let account2: Account | undefined
     let response
+    let accountRepository: AccountRepository;
+
+    beforeAll(async () => {
+        accountRepository = await AccountRepository.create()
+    })
+
+    afterAll(async () => {
+        accountRepository.close()
+    })
 
     beforeEach(async () => {
         accountId1 = uuidv4()
@@ -21,14 +30,16 @@ describe("test endpoints", () => {
         ownerId2 = uuidv4()
         account1 = Account.create(ownerId1, accountId1)
         account2 = Account.create(ownerId2, accountId2)
+
         try {
-            await AccountRepository.create(account1.getData())
-            await AccountRepository.create(account2.getData())
+            await accountRepository.create(account1.getData())
+            await accountRepository.create(account2.getData())
         } catch (e) {
             throw new Error("Could not create accounts")
         }
     })
 
+    // TODO account repository 
     it("should deposit specific amount to specific account", async () => {
         try {
             const api = new API()

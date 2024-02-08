@@ -18,11 +18,12 @@ describe("test Account and Transaction repositories", () => {
     let transaction1_f1_t2: undefined | Transaction
     let transaction2_f1_t2: undefined | Transaction
     let transaction3_f1_t2_outdated: undefined | Transaction
-
+    let accountRepository: AccountRepository;
     beforeAll(async () => {
         // Save accounts to db
-        await AccountRepository.create(account1.getData());
-        await AccountRepository.create(account2.getData());
+        accountRepository = await AccountRepository.create();
+        await accountRepository.create(account1.getData());
+        await accountRepository.create(account2.getData());
         // Transaction 1 from 1 to 2
         transaction1_f1_t2 = Transaction.create('DEPOSIT', 300, accountId1, accountId2, transactionId1)
         // Transaction 2 from 1 to 2
@@ -34,8 +35,11 @@ describe("test Account and Transaction repositories", () => {
         await TransactionRepository.create(transaction2_f1_t2.getData())
         await TransactionRepository.create(transaction3_f1_t2_outdated.getData())
     })
+    afterAll(async () => {
+        await accountRepository.close()
+    })
     it('should retrieve all created accounts (in this test)', async () => {
-        const accounts = await AccountRepository.list({
+        const accounts = await accountRepository.list({
             accountId: {
                 $in: [accountId1, accountId2]
             }
@@ -51,7 +55,7 @@ describe("test Account and Transaction repositories", () => {
         expect(transactions).toHaveLength(3)
     })
     it('should be able to retrieve specific accounts by accountId', async () => {
-        const accounts = await AccountRepository.list({ accountId: accountId1 })
+        const accounts = await accountRepository.list({ accountId: accountId1 })
         expect(accounts).toHaveLength(1)
     })
     it('should be able to retrieve specific transactiosn', async () => {
@@ -60,7 +64,7 @@ describe("test Account and Transaction repositories", () => {
 
     })
     it('should be able to retrieve specific account by ownerId', async () => {
-        const accountData = await AccountRepository.read({ ownerId: ownerId1 })
+        const accountData = await accountRepository.read({ ownerId: ownerId1 })
         expect(new Account(accountData).getOwner()).toBe(ownerId1)
     })
 
@@ -109,16 +113,16 @@ describe("test Account and Transaction repositories", () => {
                 ownerId4 = uuidv4()
                 account3 = Account.create(ownerId3, accountId3)
                 account4 = Account.create(ownerId4, accountId4)
-                await AccountRepository.create(account3.getData())
-                await AccountRepository.create(account4.getData())
-                account3Data = await AccountRepository.read({ accountId: accountId3 })
-                account4Data = await AccountRepository.read({ accountId: accountId4 })
+                await accountRepository.create(account3.getData())
+                await accountRepository.create(account4.getData())
+                account3Data = await accountRepository.read({ accountId: accountId3 })
+                account4Data = await accountRepository.read({ accountId: accountId4 })
                 expect(new Account(account3Data).getBalance()).toBe(0)
                 expect(new Account(account4Data).getBalance()).toBe(0)
                 // Deposit at account 3 -> 300$
                 await OperationsService.createOperation('DEPOSIT', 300, accountId3 as string)
-                account3Data = await AccountRepository.read({ accountId: accountId3 })
-                account4Data = await AccountRepository.read({ accountId: accountId4 })
+                account3Data = await accountRepository.read({ accountId: accountId3 })
+                account4Data = await accountRepository.read({ accountId: accountId4 })
                 expect(new Account(account3Data).getBalance()).toBe(300);
                 expect(new Account(account4Data).getBalance()).toBe(0);
             })
@@ -155,7 +159,7 @@ describe("test Account and Transaction repositories", () => {
             })
             it("should not be able to transfer with overdraft", async () => {
                 try {
-                    account3Data = await AccountRepository.read({ accountId: accountId3 })
+                    account3Data = await accountRepository.read({ accountId: accountId3 })
                     expect(new Account(account3Data).getBalance()).toBe(0) // Check balance is 0
                     await OperationsService.createOperation('TRANSFER', 300, accountId3 as string, accountId4)
                     expect("Error: can't transfer exceeding outdraw").toBeFalsy()
