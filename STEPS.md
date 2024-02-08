@@ -7,7 +7,7 @@ Docker: Docker version 24.0.5, build ced0996
 Docker-compose: Docker Compose version v2.20.2-desktop.1
 ```
 2. ONLY FOR DEVELOPMENT PURPOSES. development mode with hotreload `./dev`
-2.1. RUN TESTS IN PROD MODE TO HEALTHCECK: `./test`
+2.1. RUN TESTS IN PROD MODE TO HEALTHCECK: `./test` (with `./dev` running)
 3. FOR PRODUCTION: `./prod`
 
 # Steps/decisions made 
