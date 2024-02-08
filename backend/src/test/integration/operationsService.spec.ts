@@ -19,9 +19,11 @@ describe("test Account and Transaction repositories", () => {
     let transaction2_f1_t2: undefined | Transaction
     let transaction3_f1_t2_outdated: undefined | Transaction
     let accountRepository: AccountRepository;
+    let transactionRepository: TransactionRepository;
     beforeAll(async () => {
         // Save accounts to db
         accountRepository = await AccountRepository.create();
+        transactionRepository = await TransactionRepository.create();
         await accountRepository.create(account1.getData());
         await accountRepository.create(account2.getData());
         // Transaction 1 from 1 to 2
@@ -31,12 +33,13 @@ describe("test Account and Transaction repositories", () => {
         // Transaction 3 from 1 to 2 (more than 24h)
         transaction3_f1_t2_outdated = Transaction.create('DEPOSIT', 500, accountId1, accountId2, transactionId3, (new Date().getTime() - (25 * 60 * 60 * 1000)))
         // Save transactions to db
-        await TransactionRepository.create(transaction1_f1_t2.getData())
-        await TransactionRepository.create(transaction2_f1_t2.getData())
-        await TransactionRepository.create(transaction3_f1_t2_outdated.getData())
+        await transactionRepository.create(transaction1_f1_t2.getData())
+        await transactionRepository.create(transaction2_f1_t2.getData())
+        await transactionRepository.create(transaction3_f1_t2_outdated.getData())
     })
     afterAll(async () => {
         await accountRepository.close()
+        await transactionRepository.close()
     })
     it('should retrieve all created accounts (in this test)', async () => {
         const accounts = await accountRepository.list({
@@ -47,7 +50,7 @@ describe("test Account and Transaction repositories", () => {
         expect(accounts).toHaveLength(2)
     })
     it('should retrieve all created transactions (in this test)', async () => {
-        const transactions = await TransactionRepository.list({
+        const transactions = await transactionRepository.list({
             id: {
                 $in: [transactionId1, transactionId2, transactionId3]
             }
@@ -59,7 +62,7 @@ describe("test Account and Transaction repositories", () => {
         expect(accounts).toHaveLength(1)
     })
     it('should be able to retrieve specific transactiosn', async () => {
-        const transactions = await TransactionRepository.list({ id: transactionId1 })
+        const transactions = await transactionRepository.list({ id: transactionId1 })
         expect(transactions).toHaveLength(1)
 
     })

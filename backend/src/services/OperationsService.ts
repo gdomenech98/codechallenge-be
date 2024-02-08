@@ -14,6 +14,7 @@ export class OperationsService {
   static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<OperationType | undefined> {
     // find account where operation is performed
     const accountRepository = await AccountRepository.create()
+    const transactionRepository = await TransactionRepository.create()
     const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;
     if (!accountData) throw new Error("Can't perform operation, account doesn't exist") // This if is for healthchecking
@@ -34,7 +35,7 @@ export class OperationsService {
 
         let dayAccountDeposits: number;
         try {
-          const transactionData = await TransactionRepository.list(dailyTransactionsQuery);
+          const transactionData = await transactionRepository.list(dailyTransactionsQuery);
           dayAccountDeposits = new TransactionCollection(transactionData).totalAmount();
         } catch (error: any) {
           dayAccountDeposits = 0
@@ -84,7 +85,7 @@ export class OperationsService {
       }else {
         performedTransactionData = Transaction.create(operation, amount, fromAccountId).getData()
       }
-      await TransactionRepository.create(performedTransactionData)
+      await transactionRepository.create(performedTransactionData)
       const response = { account: account.getData(), transaction: performedTransactionData } as OperationType
       if(operation === 'TRANSFER') {
         response["destinataryAccount"] = (destinataryAccount as Account).getData();
