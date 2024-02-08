@@ -72,7 +72,7 @@ export class Transaction {
         toAccountId?: string,
         id?: string,
         timestamp?: number
-    ): Transaction {
+    ): Transaction { // FACTORY
         let newTransactionData: TransactionType = {
             id: id ?? uuidv4(),
             operation: operation,

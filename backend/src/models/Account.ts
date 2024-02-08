@@ -48,7 +48,7 @@ export class Account {
         return new Account({ ...prevData, [key]: value })
     }
 
-    static create(ownerId: string, accountId?: string): Account {
+    static create(ownerId: string, accountId?: string): Account { // FACTORY
         const newAccountData: AccountType = {
             accountId: accountId ?? uuidv4(),
             ownerId,
