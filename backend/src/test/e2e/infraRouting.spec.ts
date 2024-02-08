@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Account, AccountType } from '../../models/Account';
 import { AccountRepository } from '../../repositories/AccountRepository';
-import { OperationType } from '../../services/OperationsService';
+import { OperationResponse } from '../../services/OperationService';
 import { API } from '../../connectors/API';
 import { MongoDB } from '../../connectors/db';
 
@@ -49,7 +49,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 300
             });
-            expect(new Account((response as OperationType).account).getBalance()).toBe(300)
+            expect(new Account((response as OperationResponse).account).getBalance()).toBe(300)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -77,7 +77,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 180
             });
-            expect(new Account((response as OperationType).account).getBalance()).toBe(20)
+            expect(new Account((response as OperationResponse).account).getBalance()).toBe(20)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -90,7 +90,7 @@ describe("test endpoints", () => {
                 accountId: accountId1,
                 amount: 180
             });
-            expect(new Account((response as OperationType).account).getBalance()).toBe(-180)
+            expect(new Account((response as OperationResponse).account).getBalance()).toBe(-180)
         } catch (e) {
             expect(e).toBeFalsy()
         }
@@ -119,8 +119,8 @@ describe("test endpoints", () => {
                 toAccountId: accountId2,
                 amount: 50
             });
-            expect(new Account((response as OperationType).account).getBalance()).toBe(50)
-            expect(new Account((response as OperationType).destinataryAccount as AccountType).getBalance()).toBe(50)
+            expect(new Account((response as OperationResponse).account).getBalance()).toBe(50)
+            expect(new Account((response as OperationResponse).destinataryAccount as AccountType).getBalance()).toBe(50)
 
         } catch (e) {
             expect(e).toBeFalsy()

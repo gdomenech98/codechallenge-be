@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
-import { Server, IncomingMessage, ServerResponse } from "http";
-import { OperationsService } from "../services/OperationsService";
+import { Server } from "http";
+import { OperationsService } from "../services/OperationService";
 
 
 export class App {
@@ -24,7 +24,9 @@ export class App {
             if (!accountId) response.send('Error account is not specified').status(400)
             if (!amount) response.send('Error deposits must have positive amount').status(400)
             try {
-                const result = await OperationsService.createOperation('DEPOSIT', amount, accountId)
+                const operationService = new OperationsService()
+                await operationService.init()
+                const result = await operationService.createOperation({ operation: 'DEPOSIT', amount, fromAccountId: accountId })
                 response.json(result)
             } catch (e) {
                 response.status(500).send(e)
@@ -36,7 +38,9 @@ export class App {
             if (!accountId) response.send('Error account is not specified').status(400)
             if (!amount) response.send('Error deposits must have positive amount').status(400)
             try {
-                const result = await OperationsService.createOperation('WITHDRAW', amount, accountId)
+                const operationService = new OperationsService()
+                await operationService.init()
+                const result = await operationService.createOperation({ operation: 'WITHDRAW', amount, fromAccountId: accountId })
                 response.json(result)
             } catch (e) {
                 response.status(500).send(e)
@@ -49,7 +53,9 @@ export class App {
             if (!toAccountId) response.send('Error to account is not specified').status(400)
             if (!amount) response.send('Error deposits must have positive amount').status(400)
             try {
-                const result = await OperationsService.createOperation('TRANSFER', amount, fromAccountId, toAccountId)
+                const operationService = new OperationsService()
+                await operationService.init()
+                const result = await operationService.createOperation({operation: 'TRANSFER', amount, fromAccountId, toAccountId })
                 response.json(result)
             } catch (e) {
                 response.status(500).send(e)
@@ -57,9 +63,9 @@ export class App {
         })
 
         this.express.get('/api/v1/healthcheck', (request: Request, response: Response) => {
-             response.send("Running!")
-ﬁ       })
-        
+            response.send("Running!")
+        })
+
         this.server = this.express.listen(this.port)
     }
 
