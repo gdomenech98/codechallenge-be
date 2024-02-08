@@ -89,15 +89,10 @@ export class Transaction {
 }
 
 
-export class TransactionCollection { // WIP
+export class TransactionCollection {
     private readonly items: Transaction[];
-    constructor(items: Transaction[]) {
-        this.items = items;
-    }
-
-    static load(data: TransactionType[]): TransactionCollection {
-        const items = data.map((item: TransactionType) => new Transaction(item))
-        return new TransactionCollection(items)
+    constructor(items: TransactionType[]) {
+        this.items = items.map((item: TransactionType) => new Transaction(item));
     }
 
     getItems(): Transaction[] {

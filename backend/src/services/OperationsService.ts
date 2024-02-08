@@ -34,7 +34,7 @@ export class OperationsService {
         let dayAccountDeposits: number;
         try {
           const transactionData = await TransactionRepository.list(dailyTransactionsQuery);
-          dayAccountDeposits = TransactionCollection.load(transactionData).totalAmount();
+          dayAccountDeposits = new TransactionCollection(transactionData).totalAmount();
         } catch (error: any) {
           dayAccountDeposits = 0
           if (error.message !== 'Not found') {

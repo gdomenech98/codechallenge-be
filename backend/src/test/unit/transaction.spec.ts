@@ -1,5 +1,4 @@
 
-import exp from "constants";
 import { Transaction, TransactionCollection, TransactionType } from "../../models/Transaction";
 
 describe('Unit Testing methods for Transaction Model', () => {
@@ -221,7 +220,7 @@ describe('Unit Testing methods for TransactionCollection', () => {
         fromAccountId: "4321",
     }
     const transactionArr = [transactionData_1, transactionData_2];
-    const transactionCollection = TransactionCollection.load(transactionArr);
+    const transactionCollection = new TransactionCollection(transactionArr);
     it("should retrieve transaction collection length", () => {
         expect(transactionCollection.length()).toBe(2)
     })
