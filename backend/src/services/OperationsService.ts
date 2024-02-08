@@ -14,8 +14,8 @@ export class OperationsService {
 
   static async createOperation(operation: TransactionType['operation'], amount: number, fromAccountId: string, toAccoundId?: string): Promise<OperationType | undefined> {
     // find account where operation is performed
-    const accountRepository = await AccountRepository.create()
     const db = await MongoDB.connect()
+    const accountRepository = new AccountRepository(db)
     const transactionRepository = new TransactionRepository(db)
     const accountData = await accountRepository.read({ accountId: fromAccountId }); // If not found throw an exception
     let destinataryAccountData: AccountType;

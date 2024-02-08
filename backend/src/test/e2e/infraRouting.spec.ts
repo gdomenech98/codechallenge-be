@@ -3,6 +3,7 @@ import { Account, AccountType } from '../../models/Account';
 import { AccountRepository } from '../../repositories/AccountRepository';
 import { OperationType } from '../../services/OperationsService';
 import { API } from '../../connectors/API';
+import { MongoDB } from '../../connectors/db';
 
 
 describe("test endpoints", () => {
@@ -14,13 +15,14 @@ describe("test endpoints", () => {
     let account2: Account | undefined
     let response
     let accountRepository: AccountRepository;
-
+    let db: MongoDB
     beforeAll(async () => {
-        accountRepository = await AccountRepository.create()
+        db = await MongoDB.connect()
+        accountRepository = new AccountRepository(db)
     })
 
     afterAll(async () => {
-        accountRepository.close()
+        await db.close()
     })
 
     beforeEach(async () => {

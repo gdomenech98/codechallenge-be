@@ -26,7 +26,7 @@ describe("test Account and Transaction repositories", () => {
         // Save accounts to db
         db = await MongoDB.connect()
         transactionRepository = new TransactionRepository(db)
-        accountRepository = await AccountRepository.create();
+        accountRepository = new AccountRepository(db);
         await accountRepository.create(account1.getData());
         await accountRepository.create(account2.getData());
         // Transaction 1 from 1 to 2
@@ -41,7 +41,6 @@ describe("test Account and Transaction repositories", () => {
         await transactionRepository.create(transaction3_f1_t2_outdated.getData())
     })
     afterAll(async () => {
-        await accountRepository.close()
         await db.close()
     })
     it('should retrieve all created accounts (in this test)', async () => {
