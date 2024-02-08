@@ -41,7 +41,6 @@ describe("test endpoints", () => {
         }
     })
 
-    // TODO account repository 
     it("should deposit specific amount to specific account", async () => {
         try {
             const api = new API()

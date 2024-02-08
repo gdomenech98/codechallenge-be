@@ -28,7 +28,6 @@ export class OperationsService {
 
     constructor() {
         this.strategies = new Map();
-        // Note: Not connecting to the DB directly in the constructor
     }
 
     async init() {

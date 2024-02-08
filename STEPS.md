@@ -45,7 +45,8 @@ npm i ts-node-dev --save-dev
 13. Test endpoints `infraRouting.specs.ts`
 14. **MY EXTRA MILE!**: Add CI/CD that runns tests in GithubActions!
 (on each step i've refactored some of the code when emerged new implementations or discover the real usability of functions)
-
+15. Refactor 1: Remove static methods from classes. Preserve static methods acting as factories
+16. Refactor OperationServices, structured logic following (strategy pattern)[https://refactoring.guru/design-patterns/strategy]
 
 # Considerations:
 - Deposits can not be above $5000 per day --> I consider a day 24h from the moment action is performed, not natural days.
@@ -61,3 +62,4 @@ npm i ts-node-dev --save-dev
 - dev and prod share ports, could change it to have different ports in prod and dev.
 - Add regex to jest config to avoid jest from executing tests at /dist
 - Operations in accounts/transacitons should be atomic, and reverse if any of the operation steps fails.
+- Repositories should handle errors from database and transform it into domain errors
